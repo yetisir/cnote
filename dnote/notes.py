@@ -1,5 +1,4 @@
 import datetime
-import hashlib
 
 import boto3
 
@@ -20,7 +19,6 @@ class NoteTable:
             'text': text,
             'timestamp': int(timestamp),
         }
-
 
         self.table.put_item(Item=note)
 
@@ -56,6 +54,6 @@ def main():
 
     table.push_notes()
 
+
 if __name__ == '__main__':
     main()
-

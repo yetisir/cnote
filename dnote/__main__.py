@@ -7,7 +7,7 @@ from . import utils, entrypoints
 def main(args=None):
 
     # create the primary parser
-    parser = argparse.ArgumentParser(description='Krak')
+    parser = argparse.ArgumentParser(description='dNote')
     subparsers = parser.add_subparsers(dest='entry_point')
     subparsers.required = True
 
