@@ -2,6 +2,7 @@ import tempfile
 import subprocess
 import datetime
 import hashlib
+import sys
 
 import boto3
 import nltk
@@ -22,28 +23,33 @@ class NoteTable:
         self.create_table(self.index_name)
         self.index = self.db.Table(self.index_name)
 
-    def add_note(self, text):
+    def parse_text(self, text):
+        if not sys.stdin.isatty():
+            text = sys.stdin.read()
         if not text:
-            text = self.edit_note()
+            text = self.edit_text()
+        if not text:
+            exit()
 
+        return text.strip()
+
+    def add_note(self, text):
         timestamp = datetime.datetime.now().timestamp()
-        id = hashlib.md5(str((text, timestamp)).encode()).hexdigest()
         note = {
-            'id': id,
-            'text': text,
+            'id': hashlib.md5(str((text, timestamp)).encode()).hexdigest(),
+            'text': self.parse_text(text),
             'timestamp': int(timestamp),
         }
 
         self.table.put_item(Item=note)
-
         self.index_note(note)
 
     @staticmethod
-    def edit_note():
+    def edit_text():
         with tempfile.NamedTemporaryFile(suffix='.tmp') as tf:
             subprocess.call(['vim', '+startinsert', tf.name])
             tf.seek(0)
-            return tf.read()
+            return tf.read().decode()
 
     def create_table(self, table_name):
         if table_name in self.db.meta.client.list_tables()['TableNames']:
@@ -101,7 +107,8 @@ class NoteTable:
         return [''.join(token) for token in tokens]
 
     def find_notes(self, text):
-        tokens = self.tokenize(text, partial=False)
+        text = self.parse_text(text)
+        tokens = self.tokenize(text)
         token_ids = self.token_ids(tokens)
         id_response = self.db.batch_get_item(
             RequestItems={
@@ -110,20 +117,21 @@ class NoteTable:
                 },
             },
 
-        )
+        )['Responses'][self.index_name]
 
-        note_ids = set(
-            id_response['Responses'][self.index_name][0]['note_ids'])
+        if not id_response:
+            return
 
-        note_response = self.db.batch_get_item(
+        note_ids = set(id_response[0]['note_ids'])
+
+        notes = self.db.batch_get_item(
             RequestItems={
                 self.table.name: {
                     'Keys': [{'id': note_id} for note_id in note_ids],
                 },
             },
-        )
+        )['Responses'][self.table_name]
 
-        notes = note_response['Responses'][self.table_name]
         self.show_notes(notes)
 
     @staticmethod

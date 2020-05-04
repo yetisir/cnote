@@ -22,7 +22,7 @@ class FindNotesEntryPoint(common.EntryPoint):
         table.find_notes(options.search)
 
     def build_parser(self, parser):
-        parser.add_argument('search')
+        parser.add_argument('search', nargs='?')
 
 
 class ConfigEntryPoint(common.EntryPoint):
