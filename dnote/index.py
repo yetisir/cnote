@@ -2,7 +2,9 @@ from whoosh import index, writing, reading, matching
 
 
 class DynamoDBIndex(index.Index):
-    def __init__(self, schema, table_name):
+    def __init__(self, schema, table_name, **kwargs):
+        super().__init__(**kwargs)
+
         self.schema = schema
         self.table_name = table_name
         self.table = None  # ********8
@@ -18,7 +20,11 @@ class DynamoDBIndex(index.Index):
 
 
 class DynamoDBWriter(writing.IndexWriter):
-    def add_document(self):
+    def __init__(self, schema, **kwargs):
+        super().__init__(**kwargs)
+        self.schema = schema
+
+    def add_document(self, **fields):
         pass
 
     def add_reader(self):
