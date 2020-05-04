@@ -1,3 +1,5 @@
+import tempfile
+import subprocess
 import datetime
 
 import boto3
@@ -12,6 +14,9 @@ class NoteTable:
         self.create_table()
 
     def add_note(self, text):
+        if not text:
+            text = self.edit_note()
+
         timestamp = datetime.datetime.now().timestamp()
         id = hash((text, timestamp))
         note = {
@@ -21,6 +26,13 @@ class NoteTable:
         }
 
         self.table.put_item(Item=note)
+
+    @staticmethod
+    def edit_note():
+        with tempfile.NamedTemporaryFile(suffix='.tmp') as tf:
+            subprocess.call(['vim', '+startinsert', tf.name])
+            tf.seek(0)
+            return tf.read()
 
     def create_table(self):
         if self.table_name in self.db.meta.client.list_tables()['TableNames']:
@@ -44,6 +56,10 @@ class NoteTable:
                 'WriteCapacityUnits': 10,
             },
         )
+
+
+    def find_notes(self):
+        print(self.table.scan())
 
 
 def main():

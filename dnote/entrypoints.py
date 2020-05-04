@@ -1,6 +1,3 @@
-import tempfile
-import subprocess
-
 from . import common, notes
 
 
@@ -9,24 +6,20 @@ class NewNoteEntryPoint(common.EntryPoint):
     description = 'Add a note to the dNote database'
 
     def run(self, options):
-        with tempfile.NamedTemporaryFile(suffix='.tmp') as tf:
-            subprocess.call(['vim', '+startinsert', tf.name])
-            tf.seek(0)
-            note = tf.read()
-
-        table = notes.noteTable()
-        table.add_note(note)
+        table = notes.NoteTable()
+        table.add_note(options.note)
 
     def build_parser(self, parser):
-        pass
+        parser.add_argument('note', nargs='?', type=str)
 
 
-class SearchNotesEntryPoint(common.EntryPoint):
-    name = 'search'
+class FindNotesEntryPoint(common.EntryPoint):
+    name = 'find'
     description = 'Search for notes in the dNote database'
 
     def run(self, options):
-        pass
+        table = notes.NoteTable()
+        table.find_notes()
 
     def build_parser(self, parser):
         pass
