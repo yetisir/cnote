@@ -1,12 +1,13 @@
 from . import common, notes
+from .config import config
 
 
-class NewNoteEntryPoint(common.EntryPoint):
-    name = 'new'
-    description = 'Add a note to the dNote database'
+class AddNoteEntryPoint(common.EntryPoint):
+    name = 'add'
+    description = 'Create a new note to the dNote database'
 
     def run(self, options):
-        table = notes.NoteTable()
+        table = notes.NoteTable(endpoint=config.dynamodb_endpoint)
         table.add_note(options.note)
 
     def build_parser(self, parser):

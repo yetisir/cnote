@@ -3,15 +3,17 @@ import subprocess
 import datetime
 import hashlib
 import sys
+import socket
+import os
 
 import boto3
 import nltk
 
-from . import utils
+from . import utils, config
 
 
 class NoteTable:
-    def __init__(self, endpoint='http://localhost:8000', table_name='dnote'):
+    def __init__(self, endpoint=None, table_name='dnote'):
         self.table_name = table_name
         self.index_name = f'{table_name}_index'
 
@@ -38,6 +40,7 @@ class NoteTable:
         note = {
             'id': hashlib.md5(str((text, timestamp)).encode()).hexdigest(),
             'text': self.parse_text(text),
+            'host': socket.gethostname(),
             'timestamp': int(timestamp),
         }
 
@@ -46,10 +49,16 @@ class NoteTable:
 
     @staticmethod
     def edit_text():
-        with tempfile.NamedTemporaryFile(suffix='.tmp') as tf:
-            subprocess.call(['vim', '+startinsert', tf.name])
-            tf.seek(0)
-            return tf.read().decode()
+        editor = os.environ.get('EDITOR', 'vim')
+        args = [editor]
+        with tempfile.NamedTemporaryFile(suffix='.tmp') as temp_file:
+            if editor == 'vim':
+                args.append('+startinsert')
+            args.append(temp_file.name)
+            subprocess.call(args)
+
+            temp_file.seek(0)
+            return temp_file.read().decode()
 
     def create_table(self, table_name):
         if table_name in self.db.meta.client.list_tables()['TableNames']:
@@ -72,6 +81,14 @@ class NoteTable:
                 'ReadCapacityUnits': 10,
                 'WriteCapacityUnits': 10,
             },
+        )
+
+        waiter = self.db.meta.client.get_waiter('table_exists')
+        waiter.wait(
+            TableName=table_name,
+            WaiterConfig={
+                'Delay': 1,
+            }
         )
 
     def index_note(self, note):
@@ -106,7 +123,7 @@ class NoteTable:
 
         return [''.join(token) for token in tokens]
 
-    def find_notes(self, text):
+    def find_notes(self, text, quiet=False):
         text = self.parse_text(text)
         tokens = self.tokenize(text)
         token_ids = self.token_ids(tokens)
@@ -132,10 +149,16 @@ class NoteTable:
             },
         )['Responses'][self.table_name]
 
-        self.show_notes(notes)
+        if not quiet:
+            self.show_notes(notes)
 
     @staticmethod
     def show_notes(notes):
+        notes.sort(key=lambda x: x.get('timestamp'))
         for note in notes:
-            timestamp = datetime.datetime.fromtimestamp(note['timestamp'])
-            print(f'{timestamp} -', note['text'])
+            timestamp = datetime.datetime.fromtimestamp(note.get('timestamp'))
+            host = note.get('host')
+            text = note.get('text').replace('\n', '\n\t')
+            print(f'{timestamp} | {host}')
+            print(f'\t{text}')
+
