@@ -10,7 +10,7 @@ class NewNoteEntryPoint(common.EntryPoint):
         table.add_note(options.note)
 
     def build_parser(self, parser):
-        parser.add_argument('note', nargs='?', type=str)
+        parser.add_argument('note', nargs='?')
 
 
 class FindNotesEntryPoint(common.EntryPoint):
@@ -19,10 +19,10 @@ class FindNotesEntryPoint(common.EntryPoint):
 
     def run(self, options):
         table = notes.NoteTable()
-        table.find_notes()
+        table.find_notes(options.search)
 
     def build_parser(self, parser):
-        pass
+        parser.add_argument('search')
 
 
 class ConfigEntryPoint(common.EntryPoint):

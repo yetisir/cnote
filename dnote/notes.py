@@ -67,13 +67,11 @@ class NoteTable:
         )
 
     def index_note(self, note):
-        tokens = self.tokenize(note['text'])
-        for token in sorted(tokens):
-            id = hashlib.md5(token.encode()).hexdigest()
-
+        tokens = self.tokenize(note['text'], partial=True)
+        for token_id in self.token_ids(tokens):
             i = self.index.update_item(
                 Key={
-                    'id': id,
+                    'id': token_id,
                 },
                 UpdateExpression=(
                     'SET note_ids = list_append('
@@ -88,22 +86,56 @@ class NoteTable:
             )
 
     @staticmethod
-    def tokenize(text):
+    def token_ids(tokens):
+        return [hashlib.md5(token.encode()).hexdigest() for token in tokens]
+
+    @staticmethod
+    def tokenize(text, partial=False):
         nltk.download('punkt')
-        tokens = nltk.word_tokenize(text)
+        tokens = set(nltk.word_tokenize(text))
         stemmer = nltk.PorterStemmer()
-        stemmed_tokens = [stemmer.stem(token) for token in tokens]
-        partial_tokens = []
-        for token in list(set(tokens + stemmed_tokens)):
-            for i in range(1, len(token) + 1):
-                ngrams = nltk.ngrams(token, i)
-                partial_tokens.extend(ngrams)
+        stemmed_tokens = set(stemmer.stem(token) for token in tokens)
+        tokens.update(stemmed_tokens)
+        if partial:
+            for token in tokens.copy():
+                for i in range(1, len(token) + 1):
+                    ngrams = nltk.ngrams(token, i)
+                    tokens.update(ngrams)
 
-        return set(''.join(token) for token in partial_tokens)
+        return [''.join(token) for token in tokens]
 
 
-    def find_notes(self):
-        print(self.table.scan())
+    def find_notes(self, text):
+        tokens = self.tokenize(text, partial=False)
+        token_ids = self.token_ids(tokens)
+        id_response = self.db.batch_get_item(
+            RequestItems={
+                self.index_name: {
+                    'Keys': [{'id': token_id} for token_id in token_ids],
+                },
+            },
+
+        )
+
+        note_ids = set(id_response['Responses'][self.index_name][0]['note_ids'])
+
+        note_response = self.db.batch_get_item(
+            RequestItems={
+                self.table.name: {
+                    'Keys': [{'id': note_id} for note_id in note_ids],
+                },
+            },
+        )
+
+        notes = note_response['Responses'][self.table_name]
+        self.show_notes(notes)
+
+
+    @staticmethod
+    def show_notes(notes):
+        for note in notes:
+            timestamp = datetime.datetime.fromtimestamp(note['timestamp'])
+            print(f'{timestamp} -', note['text'])
 
 
 if __name__ == '__main__':
