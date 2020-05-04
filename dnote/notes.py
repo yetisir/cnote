@@ -6,6 +6,8 @@ import hashlib
 import boto3
 import nltk
 
+from . import utils
+
 
 class NoteTable:
     def __init__(self, endpoint='http://localhost:8000', table_name='dnote'):
@@ -67,9 +69,9 @@ class NoteTable:
         )
 
     def index_note(self, note):
-        tokens = self.tokenize(note['text'], partial=True)
+        tokens = self.tokenize(note['text'])
         for token_id in self.token_ids(tokens):
-            i = self.index.update_item(
+            self.index.update_item(
                 Key={
                     'id': token_id,
                 },
@@ -82,7 +84,6 @@ class NoteTable:
                     ':note_id': [note['id']],
                     ':empty_list': [],
                 },
-                ReturnValues='UPDATED_NEW', #temp
             )
 
     @staticmethod
@@ -90,20 +91,14 @@ class NoteTable:
         return [hashlib.md5(token.encode()).hexdigest() for token in tokens]
 
     @staticmethod
-    def tokenize(text, partial=False):
-        nltk.download('punkt')
+    def tokenize(text):
+        nltk.download('punkt', quiet=True)
         tokens = set(nltk.word_tokenize(text))
         stemmer = nltk.PorterStemmer()
         stemmed_tokens = set(stemmer.stem(token) for token in tokens)
         tokens.update(stemmed_tokens)
-        if partial:
-            for token in tokens.copy():
-                for i in range(1, len(token) + 1):
-                    ngrams = nltk.ngrams(token, i)
-                    tokens.update(ngrams)
 
         return [''.join(token) for token in tokens]
-
 
     def find_notes(self, text):
         tokens = self.tokenize(text, partial=False)
@@ -117,7 +112,8 @@ class NoteTable:
 
         )
 
-        note_ids = set(id_response['Responses'][self.index_name][0]['note_ids'])
+        note_ids = set(
+            id_response['Responses'][self.index_name][0]['note_ids'])
 
         note_response = self.db.batch_get_item(
             RequestItems={
@@ -130,13 +126,8 @@ class NoteTable:
         notes = note_response['Responses'][self.table_name]
         self.show_notes(notes)
 
-
     @staticmethod
     def show_notes(notes):
         for note in notes:
             timestamp = datetime.datetime.fromtimestamp(note['timestamp'])
             print(f'{timestamp} -', note['text'])
-
-
-if __name__ == '__main__':
-    main()

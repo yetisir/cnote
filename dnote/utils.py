@@ -1,11 +1,11 @@
 import sys
-import pathlib
-from functools import wraps
+import functools
+import contextlib
+import os
 
 
 def cli_args(function):
-
-    @wraps(function)
+    @functools.wraps(function)
     def wrapper(*args, **kwargs):
         if 'args' not in kwargs:
             return function(*args, **kwargs)
@@ -15,3 +15,13 @@ def cli_args(function):
             return function(*args, **kwargs)
 
     return wrapper
+
+
+@contextlib.contextmanager
+def suppress_std(std_type):
+    std = f'std{std_type}'
+    save_std = getattr(sys, std)
+    with open(os.devnull, 'w') as devnull:
+        setattr(sys, std, devnull)
+    yield
+    setattr(sys, std, save_std)
