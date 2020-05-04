@@ -9,7 +9,7 @@ setup(
     author='M. Yetisir',
     author_email='yetisir@gmail.com',
     install_requires=[
-        'boto3==1.13'
+        'boto3>=1.13'
     ],
     zip_safe=False,
     entry_points={
