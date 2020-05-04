@@ -25,5 +25,16 @@ class FindNotesEntryPoint(common.EntryPoint):
         pass
 
 
+class ConfigEntryPoint(common.EntryPoint):
+    name = 'config'
+    description = 'Config settings for dNote'
+
+    def run(self, options):
+        pass
+
+    def build_parser(self, parser):
+        pass
+
+
 def initialize():
     return {cls.name: cls() for cls in common.EntryPoint.__subclasses__()}
