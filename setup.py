@@ -15,7 +15,7 @@ setup(
     ],
     extras_require={
         'dev': [
-            'coveralls=2.0'
+            'coveralls=2.0',
             'pytest=5.4',
             'pytest-cov',
             'pytest-flake8=1.0',
