@@ -15,12 +15,12 @@ setup(
     ],
     extras_require={
         'dev': [
-            'coveralls=2.0',
-            'pytest=5.4',
-            'pytest-cov',
-            'pytest-flake8=1.0',
-            'sphinx=3.0',
-        ]
+            'coveralls>=2.0',
+            'pytest>=5.4',
+            'pytest-cov>=2.8',
+            'pytest-flake8>=1.0',
+            'sphinx>=3.0',
+        ],
     },
     zip_safe=False,
     entry_points={
