@@ -17,10 +17,10 @@ setup(
         'dev': [
             'coveralls>=2.0',
             'mkdocs>=1.1',
+            'pip-tools>=5.1',
             'pytest>=5.4',
             'pytest-cov>=2.8',
             'pytest-flake8>=1.0',
-            'sphinx>=3.0',
         ],
     },
     zip_safe=False,
