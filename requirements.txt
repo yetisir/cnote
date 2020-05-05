@@ -4,7 +4,6 @@
 #
 #    pip-compile
 #
--e file:///home/yeti/projects/dnote  # via -r requirements.in
 attrs==19.3.0             # via pytest
 boto3==1.13.2             # via dnote
 botocore==1.16.2          # via boto3, s3transfer
