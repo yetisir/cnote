@@ -1,5 +1,6 @@
 import pytest
 from botocore import stub
+
 from dnote import notes
 
 
