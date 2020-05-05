@@ -3,7 +3,8 @@ import configurator
 
 def get_config(config_dir='~/.dnote.yml'):
     default_config = configurator.Config({
-        'dynamodb_endpoint': None,
+        # 'dynamodb_endpoint': None,
+        'dynamodb_endpoint': 'http://localhost:8000',
     })
 
     user_config = configurator.Config.from_path(config_dir, optional=True)

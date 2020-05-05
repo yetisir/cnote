@@ -8,159 +8,150 @@ import os
 
 import nltk
 
-from . import aws
+from . import aws, index, common
 
 
-class NoteTable:
-    def __init__(self, table_name='dnote'):
-        self.table_name = table_name
-        self.index_name = f'{table_name}_index'
+class Text:
+    def __init__(self, raw):
+        self.raw = raw.strip()
 
-        self.create_table(self.table_name)
-        self.table = aws.dynamodb.Table(self.table_name)
-
-        self.create_table(self.index_name)
-        self.index = aws.dynamodb.Table(self.index_name)
-
-    def add_note(self, text):
-        timestamp = datetime.datetime.now().timestamp()
-        note = {
-            'id': hashlib.md5(str((text, timestamp)).encode()).hexdigest(),
-            'text': self.parse_text(text),
-            'host': socket.gethostname(),
-            'timestamp': int(timestamp),
-        }
-
-        self.show_notes([note])
-        self.table.put_item(Item=note)
-        self.index_note(note)
-
-    def find_notes(self, text, quiet=False):
-        text = self.parse_text(text)
-        tokens = self.tokenize(text)
-        token_ids = self.token_ids(tokens)
-        id_response = aws.dynamodb.batch_get_item(
-            RequestItems={
-                self.index_name: {
-                    'Keys': [{'id': token_id} for token_id in token_ids],
-                },
-            },
-
-        )['Responses'][self.index_name]
-
-        if not id_response:
-            return
-
-        note_ids = set(id_response[0]['note_ids'])
-
-        notes = aws.dynamodb.batch_get_item(
-            RequestItems={
-                self.table.name: {
-                    'Keys': [{'id': note_id} for note_id in note_ids],
-                },
-            },
-        )['Responses'][self.table_name]
-
-        if not quiet:
-            self.show_notes(notes)
-
-        return notes
-
-    def create_table(self, table_name):
-        if table_name in aws.dynamodb.meta.client.list_tables()['TableNames']:
-            return
-        aws.dynamodb.create_table(
-            TableName=table_name,
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'id',
-                    'AttributeType': 'S',
-                },
-            ],
-            KeySchema=[
-                {
-                    'AttributeName': 'id',
-                    'KeyType': 'HASH',
-                },
-            ],
-            ProvisionedThroughput={
-                'ReadCapacityUnits': 10,
-                'WriteCapacityUnits': 10,
-            },
-        )
-
-        waiter = aws.dynamodb.meta.client.get_waiter('table_exists')
-        waiter.wait(
-            TableName=table_name,
-            WaiterConfig={
-                'Delay': 1,
-            }
-        )
-
-    def index_note(self, note):
-        tokens = self.tokenize(note['text'])
-        for token_id in self.token_ids(tokens):
-            self.index.update_item(
-                Key={
-                    'id': token_id,
-                },
-                UpdateExpression=(
-                    'SET note_ids = list_append('
-                    '   if_not_exists(note_ids, :empty_list),'
-                    '   :note_id)'
-                ),
-                ExpressionAttributeValues={
-                    ':note_id': [note['id']],
-                    ':empty_list': [],
-                },
-            )
-
-    @staticmethod
-    def parse_text(text):
-        if text:
-            return text.strip()
-        if not sys.stdin.isatty():
-            text = sys.stdin.read()
-        if not text:
-            text = NoteTable.edit_text()
-        if not text:
-            exit()
-
-        return text.strip()
-
-    @staticmethod
-    def show_notes(notes):
-        notes.sort(key=lambda x: x.get('timestamp'))
-        for note in notes:
-            timestamp = datetime.datetime.fromtimestamp(note.get('timestamp'))
-            host = note.get('host')
-            text = note.get('text').replace('\n', '\n\t')
-            print(f'{timestamp} | {host}')
-            print(f'\t{text}')
-
-    @staticmethod
-    def token_ids(tokens):
-        return [hashlib.md5(token.encode()).hexdigest() for token in tokens]
-
-    @staticmethod
-    def tokenize(text):
-        nltk.download('punkt', quiet=True)
-        tokens = set(nltk.word_tokenize(text.lower()))
+    @property
+    def tokens(self):
+        tokens = set(nltk.word_tokenize(self.raw.lower()))
         stemmer = nltk.PorterStemmer()
         stemmed_tokens = set(stemmer.stem(token) for token in tokens)
         tokens.update(stemmed_tokens)
 
-        return [''.join(token) for token in tokens]
+        tokens = [''.join(token) for token in tokens]
+
+        return {self.token_id(token): token for token in tokens}
 
     @staticmethod
-    def edit_text():
-        editor = os.environ.get('EDITOR', 'vim')
-        args = [editor]
-        if editor == 'vim':
-            args.append('+startinsert')
-        with tempfile.NamedTemporaryFile(suffix='.tmp') as temp_file:
-            args.append(temp_file.name)
-            subprocess.call(args)
+    def token_id(token):
+        return hashlib.md5(token.encode()).hexdigest()
 
-            temp_file.seek(0)
-            return temp_file.read().decode()
+
+class Note:
+    def __init__(self, name, text, tags=None, **kwargs):
+        self.name = name
+        self.text = text.strip()
+        self.timestamp = self._get_timestamp()
+        self.host = socket.gethostname()
+        self.tags = tags if tags else []
+        self.id = self._get_id()
+
+    @classmethod
+    def from_dict(cls, attributes):
+        note_instance = cls(**attributes)
+        for attribute, value in attributes.items():
+            setattr(note_instance, attribute, value)
+
+        return note_instance
+
+    @property
+    def datetime(self):
+        return datetime.datetime.fromtimestamp(self.timestamp)
+
+    @property
+    def tokens(self):
+        return {
+            'text': Text(self.text).tokens,
+            'name': Text(self.name).tokens,
+            'tags': Text(' '.join(self.tags)).tokens,
+        }
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'text': self.text,
+            'timestamp': self.timestamp,
+            'host': self.host,
+            'tags': self.tags,
+        }
+
+    def show(self):
+        print(f'{self.name} | {self.datetime} | {self.host}')
+        print('\t' + self.text.replace('\n', '\n\t'))
+
+    def _get_timestamp(self):
+        return int(datetime.datetime.now().timestamp())
+
+    def _get_id(self):
+        hash_list = [
+            self.name,
+            self.text,
+            self.timestamp,
+            self.host,
+            tuple(self.tags),
+        ]
+
+        return hashlib.md5(str(hash_list).encode()).hexdigest()
+
+
+class NoteCollection(common.DynamoDBTable):
+    table_name='dnote'  #TODO: get from config
+
+    def __init__(self):
+        super().__init__(self)
+        self.index = index.NoteIndex()
+
+    def init_tables(self):
+        if not self.exists:
+            self.create_table()
+        
+        if not self.index.exists:
+            self.index.create_table()
+
+    def add_note(self, name, text, tags=None):
+        note = Note(name, text, tags)
+        self.table.put_item(Item=note.to_dict())
+        self.index.add_note(note)
+        note.show()
+
+    def get_note_from_id(self, id):
+        response = self.table.get_item(Key={'id': id})
+        return Note.from_dict(response)
+            
+    @staticmethod
+    def show_notes(notes):
+        for note in notes:
+            note.show()
+
+    def search_notes(self, text, field):
+        text = Text(text)
+        self.index.query_token_ids(text.tokens.keys())
+
+        print(id_response)
+    # def find_notes(self, text):
+    #     pass
+
+    #     text = self.parse_text(text)
+    #     tokens = self.tokenize(text)
+    #     token_ids = self.token_ids(tokens)
+    #     id_response = aws.dynamodb.batch_get_item(
+    #         RequestItems={
+    #             self.index_name: {
+    #                 'Keys': [{'id': token_id} for token_id in token_ids],
+    #             },
+    #         },
+
+    #     )['Responses'][self.index_name]
+
+    #     if not id_response:
+    #         return
+
+    #     note_ids = set(id_response[0]['note_ids'])
+
+    #     notes = aws.dynamodb.batch_get_item(
+    #         RequestItems={
+    #             self.table.name: {
+    #                 'Keys': [{'id': note_id} for note_id in note_ids],
+    #             },
+    #         },
+    #     )['Responses'][self.table_name]
+
+    #     if not quiet:
+    #         self.show_notes(notes)
+
+    #     return notes
