@@ -19,7 +19,7 @@ setup(
             'pytest-flake8',
             'sphinx',
         ]
-    }
+    },
     zip_safe=False,
     entry_points={
         'console_scripts': [
