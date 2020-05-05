@@ -10,4 +10,5 @@ def get_config(config_dir='~/.dnote.yml'):
 
     return default_config + user_config
 
+
 config = get_config()

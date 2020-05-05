@@ -9,8 +9,6 @@ import os
 import boto3
 import nltk
 
-from . import utils, config
-
 
 class NoteTable:
     def __init__(self, endpoint=None, table_name='dnote'):
@@ -161,4 +159,3 @@ class NoteTable:
             text = note.get('text').replace('\n', '\n\t')
             print(f'{timestamp} | {host}')
             print(f'\t{text}')
-
