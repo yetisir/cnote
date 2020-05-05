@@ -15,9 +15,11 @@ setup(
     ],
     extras_require={
         'dev': [
-            'pytest',
-            'pytest-flake8',
-            'sphinx',
+            'coveralls=2.0'
+            'pytest=5.4',
+            'pytest-cov',
+            'pytest-flake8=1.0',
+            'sphinx=3.0',
         ]
     },
     zip_safe=False,

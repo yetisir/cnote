@@ -4,4 +4,4 @@ python:
 install:
   - python -m pip install .[dev]
 script:
-  - pytest --flake8
+  - pytest --flake8 --cov=dnote
