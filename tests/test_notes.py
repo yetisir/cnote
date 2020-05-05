@@ -1,5 +1,3 @@
-import io
-
 from dnote import notes
 
 
@@ -55,18 +53,3 @@ def test_text_editor_input(capfd):
 
     out, _ = capfd.readouterr()
     assert out
-
-
-def test_text_stdin_input(monkeypatch):
-    test_note = 'This is a test note'
-    monkeypatch.setattr('sys.stdin', io.StringIO(test_note))
-    result_note = notes.NoteTable().parse_text(None)
-
-    assert result_note == test_note
-
-
-def test_text_arg_input():
-    test_note = 'This is a test note'
-    result_note = notes.NoteTable().parse_text(test_note)
-
-    assert result_note == test_note
