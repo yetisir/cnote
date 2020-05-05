@@ -6,22 +6,21 @@ import sys
 import socket
 import os
 
-import boto3
 import nltk
+
+from . import aws
 
 
 class NoteTable:
-    def __init__(self, endpoint=None, table_name='dnote'):
+    def __init__(self, table_name='dnote'):
         self.table_name = table_name
         self.index_name = f'{table_name}_index'
 
-        self.db = boto3.resource('dynamodb', endpoint_url=endpoint)
-
         self.create_table(self.table_name)
-        self.table = self.db.Table(self.table_name)
+        self.table = aws.dynamodb.Table(self.table_name)
 
         self.create_table(self.index_name)
-        self.index = self.db.Table(self.index_name)
+        self.index = aws.dynamodb.Table(self.index_name)
 
     def add_note(self, text):
         timestamp = datetime.datetime.now().timestamp()
@@ -32,6 +31,7 @@ class NoteTable:
             'timestamp': int(timestamp),
         }
 
+        self.show_notes([note])
         self.table.put_item(Item=note)
         self.index_note(note)
 
@@ -39,7 +39,7 @@ class NoteTable:
         text = self.parse_text(text)
         tokens = self.tokenize(text)
         token_ids = self.token_ids(tokens)
-        id_response = self.db.batch_get_item(
+        id_response = aws.dynamodb.batch_get_item(
             RequestItems={
                 self.index_name: {
                     'Keys': [{'id': token_id} for token_id in token_ids],
@@ -53,7 +53,7 @@ class NoteTable:
 
         note_ids = set(id_response[0]['note_ids'])
 
-        notes = self.db.batch_get_item(
+        notes = aws.dynamodb.batch_get_item(
             RequestItems={
                 self.table.name: {
                     'Keys': [{'id': note_id} for note_id in note_ids],
@@ -64,20 +64,12 @@ class NoteTable:
         if not quiet:
             self.show_notes(notes)
 
-    def parse_text(self, text):
-        if not sys.stdin.isatty():
-            text = sys.stdin.read()
-        if not text:
-            text = self.edit_text()
-        if not text:
-            exit()
-
-        return text.strip()
+        return notes
 
     def create_table(self, table_name):
-        if table_name in self.db.meta.client.list_tables()['TableNames']:
+        if table_name in aws.dynamodb.meta.client.list_tables()['TableNames']:
             return
-        self.db.create_table(
+        aws.dynamodb.create_table(
             TableName=table_name,
             AttributeDefinitions=[
                 {
@@ -97,7 +89,7 @@ class NoteTable:
             },
         )
 
-        waiter = self.db.meta.client.get_waiter('table_exists')
+        waiter = aws.dynamodb.meta.client.get_waiter('table_exists')
         waiter.wait(
             TableName=table_name,
             WaiterConfig={
@@ -122,6 +114,19 @@ class NoteTable:
                     ':empty_list': [],
                 },
             )
+
+    @staticmethod
+    def parse_text(text):
+        if text:
+            return text.strip()
+        if not sys.stdin.isatty():
+            text = sys.stdin.read()
+        if not text:
+            text = NoteTable.edit_text()
+        if not text:
+            exit()
+
+        return text.strip()
 
     @staticmethod
     def show_notes(notes):
@@ -151,9 +156,9 @@ class NoteTable:
     def edit_text():
         editor = os.environ.get('EDITOR', 'vim')
         args = [editor]
+        if editor == 'vim':
+            args.append('+startinsert')
         with tempfile.NamedTemporaryFile(suffix='.tmp') as temp_file:
-            if editor == 'vim':
-                args.append('+startinsert')
             args.append(temp_file.name)
             subprocess.call(args)
 

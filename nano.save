@@ -1,0 +1,2 @@
+build dist dnote dNote.egg-info docs LICENSE mkdocs.yml README.md requirements.in 
+requirements.txt setup.py tests

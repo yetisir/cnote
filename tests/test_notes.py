@@ -1,3 +1,5 @@
+import io
+
 from dnote import notes
 
 
@@ -44,3 +46,27 @@ def test_note_display(capfd):
     notes.NoteTable.show_notes(test_notes)
     out, _ = capfd.readouterr()
     assert out
+
+
+def test_text_editor_input(capfd):
+    # not really sure how to test this, so right now we only test that it runs
+    # without error
+    notes.NoteTable.edit_text()
+
+    out, _ = capfd.readouterr()
+    assert out
+
+
+def test_text_stdin_input(monkeypatch):
+    test_note = 'This is a test note'
+    monkeypatch.setattr('sys.stdin', io.StringIO(test_note))
+    result_note = notes.NoteTable().parse_text(None)
+
+    assert result_note == test_note
+
+
+def test_text_arg_input():
+    test_note = 'This is a test note'
+    result_note = notes.NoteTable().parse_text(test_note)
+
+    assert result_note == test_note
