@@ -1,9 +1,14 @@
 language: python
 python:
-  - '3.6'
+- '3.6'
 install:
-  - python -m pip install .[dev]
+- python -m pip install .[dev]
 script:
-  - pytest --flake8 --cov=dnote
+- pytest --flake8 --cov=dnote
 after_success:
-  - coveralls
+- coveralls
+deploy:
+  provider: pypi
+  user: __token__
+  password:
+    secure: Nnwviax3G5bgUMtIe52czea/oNk9O0h6LdaCT/V4A3F5C41qc5JX1Hzax7QXdF3XlykkUCwmapcvv4gPiLJC00KVMforX6qjNyaDrc9RlFeKIIHdutJ8FlwQ2yLb31mk+GbDCnP/xYGV+fkdIJqIN1tlXHJ/+v8ztmFIUTstr9af80lkGpwq7FbNOLInBDui0HHXJ7SW+7i102H+42rCQ0K0CQtSP/zWHtaH21SV0+4aZ/Nr8fde5oQkegCp8l+Y/S0eGxUa2Qh1eiDdsZQ2zHXtGPJ5ngQbmlr0jWWR2hZc3szV+xBdJpYdmMdf2Q1B2Af5tnnl1Kgn8UlNGK/14SckaMK4W9zUHgnSETJEjpPHy3e0iKtagLL1WRiV66jHq/wWvwidfExrSaGW6NPuQnWODlThKYt9D8+lNRRgHh1N3CYl0nUr+fxMOVJ1Ud7GMf8pm6sxRYi38iJ1UEd+PZLq/HvghbQKGjnjF9nesoWZelLBctYBVx1j50FSS0gk3pOn/iIQ5j1ffPRoIjsPERllCNGIT1e3XynthCGCG0ovwGz7cH+GYuqK+aJJS6t0TISvJ3Oi6Gt7zUbBfw3ApX+nJvWbkuV4gczF35d6qiMinJ+OIUAHHZtF0AETQ+WK7x5nze2eedYMN1/v57idV8mwcnMQWAcvSt22YgXoeE0=
