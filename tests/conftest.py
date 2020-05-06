@@ -1,11 +1,12 @@
 import datetime
 import socket
 import getpass
+from unittest import mock
 
 import pytest
 from botocore import stub
 
-from dnote import aws
+from dnote import aws, utils
 
 TEST_TIMESTAMP = datetime.datetime(2020, 12, 25, 17, 5, 55)
 TEST_HOST = 'host'
@@ -21,12 +22,8 @@ def dynamodb_stub():
 
 @pytest.fixture
 def datetime_now(monkeypatch):
-    mockdatetime = type('', (), {})
-    mockdatetime.fromtimestamp = datetime.datetime.fromtimestamp
-    mockdatetime.now = lambda: TEST_TIMESTAMP
-
     monkeypatch.setattr(
-        datetime, 'datetime', mockdatetime)
+        utils, 'now', lambda: TEST_TIMESTAMP)
 
 
 @pytest.fixture

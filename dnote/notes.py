@@ -1,11 +1,11 @@
-import datetime
 import hashlib
 import socket
 import getpass
+import datetime
 
 import nltk
 
-from . import aws, index, common
+from . import aws, index, common, utils
 
 
 class Text:
@@ -91,7 +91,7 @@ class Note:
 
     @staticmethod
     def _get_timestamp():
-        return int(datetime.datetime.now().timestamp())
+        return int(utils.now().timestamp())
 
 
 class NoteCollection(common.DynamoDBTable):
