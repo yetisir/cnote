@@ -1,17 +1,10 @@
-import argparse
 from abc import ABC, abstractmethod
 
-from . import utils
+from . import aws
 
 
 class EntryPoint(ABC):
-
-    @utils.cli_args
-    def main(self, args=None):
-        parser = argparse.ArgumentParser(description=self.description)
-        self.build_parser(parser)
-        parameters = parser.parse_args(args)
-        self.run(parameters)
+    aliases = []
 
     @property
     @abstractmethod
@@ -30,3 +23,42 @@ class EntryPoint(ABC):
     @abstractmethod
     def build_parser(self, parser):
         raise NotImplementedError
+
+
+class DynamoDBTable(ABC):
+
+    def __init__(self, *args, **kwargs):
+        self.table = aws.dynamodb.Table(self.table_name)
+
+    @property
+    @abstractmethod
+    def table_name(self):
+        raise NotImplementedError
+
+    @property
+    def exists(self):
+        table_names = aws.dynamodb.meta.client.list_tables()['TableNames']
+        return self.table_name in table_names
+
+    def create_table(self):
+        aws.dynamodb.create_table(
+            TableName=self.table_name,
+            AttributeDefinitions=[
+                {'AttributeName': 'id', 'AttributeType': 'S'},
+            ],
+            KeySchema=[
+                {'AttributeName': 'id', 'KeyType': 'HASH'},
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 10,
+                'WriteCapacityUnits': 10,
+            },
+        )
+
+        waiter = aws.dynamodb.meta.client.get_waiter('table_exists')
+        waiter.wait(
+            TableName=self.table_name,
+            WaiterConfig={
+                'Delay': 1,
+            }
+        )
