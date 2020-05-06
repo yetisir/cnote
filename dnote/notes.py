@@ -73,15 +73,15 @@ class Note:
             print(f'\t{line}')
 
     def _get_id(self):
-        hash_list = [
-            self.name,
-            self.body,
-            self.timestamp,
-            self.host,
-            tuple(self.tags),
-        ]
+        note_hash = hashlib.md5()
+        note_hash.update(self.name.encode())
+        note_hash.update(self.body.encode())
+        note_hash.update(self.host.encode())
+        note_hash.update(str(self.timestamp).encode())
+        for tag in self.tags:
+            note_hash.update(tag.encode())
 
-        return hashlib.md5(str(hash_list).encode()).hexdigest()
+        return note_hash.hexdigest()
 
     @staticmethod
     def _get_timestamp():

@@ -11,7 +11,7 @@ def test_initialization_1(user, host, datetime_now):
     test_output_timestamp = int(conftest.TEST_TIMESTAMP.timestamp())
     test_output_host = conftest.TEST_HOST
     test_output_tags = []
-    test_output_id = '11f3cf1a8f9e45577017172d77c09fa3'
+    test_output_id = 'b7338e3952bdb0d9a819872d2fca42ea'
 
     assert test_input.name == test_output_name
     assert test_input.body == test_output_body
@@ -34,7 +34,7 @@ def test_initialization_2(user, host, datetime_now):
     test_output_body = 'This is a sample note!'
     test_output_timestamp = int(conftest.TEST_TIMESTAMP.timestamp())
     test_output_host = conftest.TEST_HOST
-    test_output_id = '1b35b9f893cedb677d5429b5b0f4bf2b'
+    test_output_id = '97443605ff10b1f53cf3551b1f413adf'
     test_output_tags = [
         'custom tag 1',
         'custom tag 2',
@@ -138,7 +138,7 @@ def test_serialization(user, host, datetime_now):
         ],
         'host': conftest.TEST_HOST,
         'timestamp': 1608944755,
-        'id': '1b35b9f893cedb677d5429b5b0f4bf2b'
+        'id': '97443605ff10b1f53cf3551b1f413adf'
     }
 
     assert test_input.to_dict() == test_output
