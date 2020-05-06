@@ -5,7 +5,7 @@
 #    pip-compile
 #
 attrs==19.3.0             # via pytest
-boto3==1.13.2             # via sanitized-package
+boto3==1.13.3             # via sanitized-package
 botocore==1.16.3          # via boto3, s3transfer
 certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
