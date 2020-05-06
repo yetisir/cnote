@@ -5,6 +5,7 @@ import hashlib
 import sys
 import socket
 import os
+import getpass 
 
 import nltk
 
@@ -32,8 +33,8 @@ class Text:
 
 
 class Note:
-    def __init__(self, name, body, tags=None, **kwargs):
-        self.name = name
+    def __init__(self, body, name, tags=None, **kwargs):
+        self.name = name if name else f'{getpass.getuser()}\'s Note'
         self.body = body.strip()
         self.timestamp = self._get_timestamp()
         self.host = socket.gethostname()
@@ -72,8 +73,9 @@ class Note:
         }
 
     def show(self):
-        print(f'{self.name}[{self.host}@{self.datetime}]')
-        print('\t' + self.body.replace('\n', '\n\t'))
+        print(f'"{self.name}" [{self.host}@{self.datetime}]')
+        for line in self.body.split('\n'):
+            print(f'\t{line}')
 
     def _get_timestamp(self):
         return int(datetime.datetime.now().timestamp())
@@ -104,8 +106,8 @@ class NoteCollection(common.DynamoDBTable):
         if not self.index.exists:
             self.index.create_table()
 
-    def add_note(self, name, body, tags=None):
-        note = Note(name, body, tags)
+    def add_note(self, body, name=None, tags=None):
+        note = Note(body, name=name, tags=tags)
         self.table.put_item(Item=note.to_dict())
         self.index.add_note(note)
         note.show()

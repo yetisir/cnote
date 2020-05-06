@@ -2,6 +2,7 @@ import os
 import sys
 import tempfile
 import subprocess
+import fileinput
 
 from . import common, notes
 
@@ -13,25 +14,30 @@ class NewNoteEntryPoint(common.EntryPoint):
     def run(self, options):
         collection = notes.NoteCollection()
         collection.init_tables()
-        collection.add_note(options.name, self._launch_editor())
+        body = self._launch_editor()
+        if body:
+            collection.add_note(
+                body, name=options.name, tags=options.tags)
 
     def build_parser(self, parser):
-        parser.add_argument('name')
-        parser.add_argument('--tags', '-t')
+        parser.add_argument('--name', '-n')
+        parser.add_argument('--tags', '-t', nargs='+')
         parser.add_argument('--file', '-f')
 
     @staticmethod
     def _launch_editor():
         editor = os.environ.get('EDITOR', 'vim')
         args = [editor]
-        if not sys.stdin.isatty():
-            args.append('-')
+        note = sys.stdin.read() if not sys.stdin.isatty() else ''
+
         if editor == 'vim':
             args.append('+startinsert')
-        with tempfile.NamedTemporaryFile(suffix='.tmp') as temp_file:
+
+        with tempfile.NamedTemporaryFile() as temp_file:
+            temp_file.write(note.encode())
+            temp_file.flush()
             args.append(temp_file.name)
             subprocess.call(args)
-
             temp_file.seek(0)
             return temp_file.read().decode()
 
