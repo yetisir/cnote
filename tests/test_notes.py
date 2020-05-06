@@ -159,6 +159,8 @@ def test_show(user, host, datetime_now, capfd):
     assert test_input.id in stdout_lines[0]
     assert test_input.name in stdout_lines[0]
 
+def test_hashing(user, host, datetime):
+    pass
 # def test_tokenize():
 #     test_notes = {
 #         'This is a note': [

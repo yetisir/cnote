@@ -21,11 +21,11 @@ def dynamodb_stub():
 @pytest.fixture
 def datetime_now(monkeypatch):
     class mockdatetime:
+        fromtimestamp = datetime.datetime.fromtimestamp
         @classmethod
         def now(cls):
             return TEST_TIMESTAMP
 
-    mockdatetime.fromtimestamp = datetime.datetime.fromtimestamp
 
     monkeypatch.setattr(
         datetime, 'datetime', mockdatetime)
