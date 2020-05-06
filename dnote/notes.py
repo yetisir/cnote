@@ -1,11 +1,7 @@
-import tempfile
-import subprocess
 import datetime
 import hashlib
-import sys
 import socket
-import os
-import getpass 
+import getpass
 
 import nltk
 
@@ -93,7 +89,7 @@ class Note:
 
 
 class NoteCollection(common.DynamoDBTable):
-    table_name='dnote'  #TODO: get from config
+    table_name = 'dnote'  # TODO: get from config
 
     def __init__(self):
         super().__init__(self)
@@ -102,7 +98,7 @@ class NoteCollection(common.DynamoDBTable):
     def init_tables(self):
         if not self.exists:
             self.create_table()
-        
+
         if not self.index.exists:
             self.index.create_table()
 
@@ -126,7 +122,7 @@ class NoteCollection(common.DynamoDBTable):
         )['Responses'][self.table_name]
 
         return [Note.from_dict(note) for note in notes]
-            
+
     @staticmethod
     def show_notes(notes):
         for note in notes:
@@ -162,12 +158,12 @@ class NoteCollection(common.DynamoDBTable):
 
     @staticmethod
     def _exact_match_notes(notes, field_searches):
-            exact_match_notes = []
-            for note in notes:
-                for field, search in field_searches.items():
-                    if search in getattr(note, field):
-                        exact_match_notes.append(note)
-            return exact_match_notes
+        exact_match_notes = []
+        for note in notes:
+            for field, search in field_searches.items():
+                if search in getattr(note, field):
+                    exact_match_notes.append(note)
+        return exact_match_notes
 
     def _create_search_map(self, fields):
         search_map = {}
@@ -178,7 +174,8 @@ class NoteCollection(common.DynamoDBTable):
 
             field_search_map = {}
             for response in responses:
-                token_note_ids = response.get(index.NoteIndex.get_field_name(field))
+                token_note_ids = response.get(
+                    index.NoteIndex.get_field_name(field))
                 if not token_note_ids:
                     continue
                 field_search_map[tokens[response['id']]] = set(token_note_ids)

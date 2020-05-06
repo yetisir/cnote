@@ -11,6 +11,7 @@ TEST_TIMESTAMP = datetime.datetime(2020, 12, 25, 17, 5, 55)
 TEST_HOST = 'host'
 TEST_USER = 'user'
 
+
 @pytest.fixture(autouse=True)
 def dynamodb_stub():
     with stub.Stubber(aws.dynamodb.meta.client) as stubber:
@@ -20,20 +21,19 @@ def dynamodb_stub():
 
 @pytest.fixture
 def datetime_now(monkeypatch):
-    class mockdatetime:
-        fromtimestamp = datetime.datetime.fromtimestamp
-        @classmethod
-        def now(cls):
-            return TEST_TIMESTAMP
-
+    mockdatetime = type('', (), {})
+    mockdatetime.fromtimestamp = datetime.datetime.fromtimestamp
+    mockdatetime.now = lambda: TEST_TIMESTAMP
 
     monkeypatch.setattr(
         datetime, 'datetime', mockdatetime)
+
 
 @pytest.fixture
 def host(monkeypatch):
     monkeypatch.setattr(
         socket, 'gethostname', lambda: TEST_HOST)
+
 
 @pytest.fixture
 def user(monkeypatch):

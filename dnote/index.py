@@ -1,5 +1,6 @@
 from . import aws, common
 
+
 class NoteIndex(common.DynamoDBTable):
     table_name = 'dnote_index'  # TODO: move to config
 
@@ -38,5 +39,5 @@ class NoteIndex(common.DynamoDBTable):
                 self.table_name: {
                     'Keys': [{'id': token_id} for token_id in token_ids],
                 },
-            },            
+            },
         )['Responses'][self.table_name]

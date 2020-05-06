@@ -1,4 +1,3 @@
-import argparse
 from abc import ABC, abstractmethod
 
 from . import aws
@@ -38,7 +37,8 @@ class DynamoDBTable(ABC):
 
     @property
     def exists(self):
-        return self.table_name in aws.dynamodb.meta.client.list_tables()['TableNames']
+        table_names = aws.dynamodb.meta.client.list_tables()['TableNames']
+        return self.table_name in table_names
 
     def create_table(self):
         aws.dynamodb.create_table(

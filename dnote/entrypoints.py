@@ -2,7 +2,6 @@ import os
 import sys
 import tempfile
 import subprocess
-import fileinput
 
 from . import common, notes
 
@@ -80,7 +79,8 @@ class EditNoteEntryPoint(common.EntryPoint):
         parser.add_argument('--name', '-n')
         parser.add_argument('--tags', '-t', nargs='+')
         parser.add_argument('--open', '-o', action='store_true')
-    
+
+
 class ShowNoteEntryPoint(common.EntryPoint):
     name = 'show'
     aliases = ['s']
