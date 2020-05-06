@@ -73,6 +73,12 @@ class Note:
             print(f'\t{line}')
 
     def _get_id(self):
+        print('name', self.name)
+        print('body', self.body)
+        print('host', self.host)
+        print('timestamp', self.timestamp)
+        print('tags', self.tags)
+
         note_hash = hashlib.md5()
         note_hash.update(self.name.encode())
         note_hash.update(self.body.encode())

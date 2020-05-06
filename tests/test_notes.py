@@ -17,7 +17,7 @@ def test_initialization_1(user, host, datetime_now):
     assert test_input.body == test_output_body
     assert test_input.timestamp == test_output_timestamp
     assert test_input.host == test_output_host
-    assert test_input.tags == test_output_tags
+    assert set(test_input.tags) == set(test_output_tags)
     assert test_input.id == test_output_id
 
 
@@ -40,13 +40,21 @@ def test_initialization_2(user, host, datetime_now):
         'custom tag 2',
     ]
 
-    print(test_output_name)
+    
+    print( test_input.name , test_output_name)
+    print( test_input.body , test_output_body)
+    print( test_input.timestamp , test_output_timestamp)
+    print( test_input.host , test_output_host)
+    print( set(test_input.tags) , set(test_output_tags)
+    print( test_input.id , test_output_id)
+
+
 
     assert test_input.name == test_output_name
     assert test_input.body == test_output_body
     assert test_input.timestamp == test_output_timestamp
     assert test_input.host == test_output_host
-    assert test_input.tags == test_output_tags
+    assert set(test_input.tags) == set(test_output_tags)
     assert test_input.id == test_output_id
 
 
@@ -79,7 +87,7 @@ def test_initialization_3(user, host, datetime_now):
     assert note.body == test_output_body
     assert note.timestamp == test_output_timestamp
     assert note.host == test_output_host
-    assert note.tags == test_output_tags
+    assert set(note.tags) == set(test_output_tags)
     assert note.id == test_output_id
 
 
