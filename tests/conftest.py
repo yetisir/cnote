@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 import socket
 import getpass
 from unittest import mock
@@ -8,7 +8,7 @@ from botocore import stub
 
 from dnote import aws, utils
 
-TEST_TIMESTAMP = datetime.datetime(2020, 12, 25, 17, 5, 55)
+TEST_TIMESTAMP = datetime(2020, 12, 25, 17, 5, 55, tzinfo=timezone.utc)
 TEST_HOST = 'host'
 TEST_USER = 'user'
 

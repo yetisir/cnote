@@ -29,4 +29,4 @@ def suppress_std(std_type):
 
 
 def now():
-    return datetime.datetime.now()
+    return datetime.datetime.utcnow()

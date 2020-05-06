@@ -11,7 +11,7 @@ def test_initialization_1(user, host, datetime_now):
     test_output_timestamp = int(conftest.TEST_TIMESTAMP.timestamp())
     test_output_host = conftest.TEST_HOST
     test_output_tags = []
-    test_output_id = 'b7338e3952bdb0d9a819872d2fca42ea'
+    test_output_id = '331c940bfdc43eeb9f87818c9c60948d'
 
     assert test_input.name == test_output_name
     assert test_input.body == test_output_body
@@ -34,21 +34,11 @@ def test_initialization_2(user, host, datetime_now):
     test_output_body = 'This is a sample note!'
     test_output_timestamp = int(conftest.TEST_TIMESTAMP.timestamp())
     test_output_host = conftest.TEST_HOST
-    test_output_id = '97443605ff10b1f53cf3551b1f413adf'
+    test_output_id = '1a7b5dcf737ca2db439eafe13449890f'
     test_output_tags = [
         'custom tag 1',
         'custom tag 2',
     ]
-
-    
-    print(test_input.name , test_output_name)
-    print(test_input.body , test_output_body)
-    print(test_input.timestamp , test_output_timestamp)
-    print(test_input.host , test_output_host)
-    print(set(test_input.tags) , set(test_output_tags))
-    print(test_input.id , test_output_id)
-
-
 
     assert test_input.name == test_output_name
     assert test_input.body == test_output_body
@@ -67,13 +57,13 @@ def test_initialization_3(user, host, datetime_now):
             'custom tag 2',
         ],
         'host': 'testhost',
-        'timestamp': 1608944755,
+        'timestamp': 1608915955,
         'id': '1b35b9f893cedb677d5429b5b0f4bf2b'
     }
 
     test_output_name = 'Custom note name'
     test_output_body = 'This is a sample note!'
-    test_output_timestamp = 1608944755
+    test_output_timestamp = 1608915955
     test_output_host = 'testhost'
     test_output_id = '1b35b9f893cedb677d5429b5b0f4bf2b'
     test_output_tags = [
@@ -145,8 +135,8 @@ def test_serialization(user, host, datetime_now):
             'custom tag 2',
         ],
         'host': conftest.TEST_HOST,
-        'timestamp': 1608944755,
-        'id': '97443605ff10b1f53cf3551b1f413adf'
+        'timestamp': int(conftest.TEST_TIMESTAMP.timestamp()),
+        'id': '1a7b5dcf737ca2db439eafe13449890f'
     }
 
     assert test_input.to_dict() == test_output
