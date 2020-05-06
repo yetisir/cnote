@@ -41,12 +41,12 @@ def test_initialization_2(user, host, datetime_now):
     ]
 
     
-    print( test_input.name , test_output_name)
-    print( test_input.body , test_output_body)
-    print( test_input.timestamp , test_output_timestamp)
-    print( test_input.host , test_output_host)
-    print( set(test_input.tags) , set(test_output_tags)
-    print( test_input.id , test_output_id)
+    print(test_input.name , test_output_name)
+    print(test_input.body , test_output_body)
+    print(test_input.timestamp , test_output_timestamp)
+    print(test_input.host , test_output_host)
+    print(set(test_input.tags) , set(test_output_tags))
+    print(test_input.id , test_output_id)
 
 
 
