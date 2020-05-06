@@ -11,14 +11,19 @@ class NoteIndex(common.DynamoDBTable):
             for token_id in tokens.keys():
                 self.update_index(note.id, token_id, field)
 
+    @staticmethod
+    def get_field_name(field):
+        return f'note_ids_in_{field}'
+
     def update_index(self, note_id, token_id, field):
+        field_name = self.get_field_name(field)
         self.table.update_item(
             Key={
                 'id': token_id,
             },
             UpdateExpression=(
-                f'SET note_ids_in_{field} = list_append('
-                f'   if_not_exists(note_ids_in_{field}, :empty_list),'
+                f'SET {field_name} = list_append('
+                f'   if_not_exists({field_name}, :empty_list),'
                 f'   :note_id) '
             ),
             ExpressionAttributeValues={
@@ -34,4 +39,4 @@ class NoteIndex(common.DynamoDBTable):
                     'Keys': [{'id': token_id} for token_id in token_ids],
                 },
             },            
-        )
+        )['Responses'][self.table_name]

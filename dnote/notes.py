@@ -32,9 +32,9 @@ class Text:
 
 
 class Note:
-    def __init__(self, name, text, tags=None, **kwargs):
+    def __init__(self, name, body, tags=None, **kwargs):
         self.name = name
-        self.text = text.strip()
+        self.body = body.strip()
         self.timestamp = self._get_timestamp()
         self.host = socket.gethostname()
         self.tags = tags if tags else []
@@ -55,8 +55,9 @@ class Note:
     @property
     def tokens(self):
         return {
-            'text': Text(self.text).tokens,
+            'body': Text(self.body).tokens,
             'name': Text(self.name).tokens,
+            'host': Text(self.host).tokens,
             'tags': Text(' '.join(self.tags)).tokens,
         }
 
@@ -64,15 +65,15 @@ class Note:
         return {
             'id': self.id,
             'name': self.name,
-            'text': self.text,
+            'body': self.body,
             'timestamp': self.timestamp,
             'host': self.host,
             'tags': self.tags,
         }
 
     def show(self):
-        print(f'{self.name} | {self.datetime} | {self.host}')
-        print('\t' + self.text.replace('\n', '\n\t'))
+        print(f'{self.name}[{self.host}@{self.datetime}]')
+        print('\t' + self.body.replace('\n', '\n\t'))
 
     def _get_timestamp(self):
         return int(datetime.datetime.now().timestamp())
@@ -80,7 +81,7 @@ class Note:
     def _get_id(self):
         hash_list = [
             self.name,
-            self.text,
+            self.body,
             self.timestamp,
             self.host,
             tuple(self.tags),
@@ -103,8 +104,8 @@ class NoteCollection(common.DynamoDBTable):
         if not self.index.exists:
             self.index.create_table()
 
-    def add_note(self, name, text, tags=None):
-        note = Note(name, text, tags)
+    def add_note(self, name, body, tags=None):
+        note = Note(name, body, tags)
         self.table.put_item(Item=note.to_dict())
         self.index.add_note(note)
         note.show()
@@ -112,46 +113,74 @@ class NoteCollection(common.DynamoDBTable):
     def get_note_from_id(self, id):
         response = self.table.get_item(Key={'id': id})
         return Note.from_dict(response)
+
+    def get_notes_from_ids(self, ids):
+        notes = aws.dynamodb.batch_get_item(
+            RequestItems={
+                self.table.name: {
+                    'Keys': [{'id': note_id} for note_id in ids],
+                },
+            },
+        )['Responses'][self.table_name]
+
+        return [Note.from_dict(note) for note in notes]
             
     @staticmethod
     def show_notes(notes):
         for note in notes:
             note.show()
 
-    def search_notes(self, text, field):
-        text = Text(text)
-        self.index.query_token_ids(text.tokens.keys())
+    def text_search(self, field_searches, exact=False):
+        field_searches = {
+            field: searches for field, searches in field_searches.items()
+            if searches}
+        search_map = self._create_search_map(field_searches)
 
-        print(id_response)
-    # def find_notes(self, text):
-    #     pass
+        note_id_sets = []
 
-    #     text = self.parse_text(text)
-    #     tokens = self.tokenize(text)
-    #     token_ids = self.token_ids(tokens)
-    #     id_response = aws.dynamodb.batch_get_item(
-    #         RequestItems={
-    #             self.index_name: {
-    #                 'Keys': [{'id': token_id} for token_id in token_ids],
-    #             },
-    #         },
+        for field_search_map in search_map.values():
+            for note_ids in field_search_map.values():
+                note_id_sets.append(note_ids)
 
-    #     )['Responses'][self.index_name]
+        all_note_ids = set.intersection(*note_id_sets)
 
-    #     if not id_response:
-    #         return
+        if not all_note_ids:
+            return
 
-    #     note_ids = set(id_response[0]['note_ids'])
+        notes = self.get_notes_from_ids(all_note_ids)
 
-    #     notes = aws.dynamodb.batch_get_item(
-    #         RequestItems={
-    #             self.table.name: {
-    #                 'Keys': [{'id': note_id} for note_id in note_ids],
-    #             },
-    #         },
-    #     )['Responses'][self.table_name]
+        if exact:
+            notes = self._exact_match_notes(notes, field_searches)
 
-    #     if not quiet:
-    #         self.show_notes(notes)
+        if not notes:
+            return
 
-    #     return notes
+        notes.sort(key=lambda note: note.timestamp)
+        self.show_notes(notes)
+
+    @staticmethod
+    def _exact_match_notes(notes, field_searches):
+            exact_match_notes = []
+            for note in notes:
+                for field, search in field_searches.items():
+                    if search in getattr(note, field):
+                        exact_match_notes.append(note)
+            return exact_match_notes
+
+    def _create_search_map(self, fields):
+        search_map = {}
+        for field, search in fields.items():
+
+            tokens = Text(search).tokens
+            responses = self.index.query_token_ids(tokens)
+
+            field_search_map = {}
+            for response in responses:
+                token_note_ids = response.get(index.NoteIndex.get_field_name(field))
+                if not token_note_ids:
+                    continue
+                field_search_map[tokens[response['id']]] = set(token_note_ids)
+
+            search_map[field] = field_search_map
+
+        return search_map

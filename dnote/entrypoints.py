@@ -1,4 +1,5 @@
 import os
+import sys
 import tempfile
 import subprocess
 
@@ -16,11 +17,15 @@ class NewNoteEntryPoint(common.EntryPoint):
 
     def build_parser(self, parser):
         parser.add_argument('name')
+        parser.add_argument('--tags', '-t')
+        parser.add_argument('--file', '-f')
 
     @staticmethod
     def _launch_editor():
         editor = os.environ.get('EDITOR', 'vim')
         args = [editor]
+        if not sys.stdin.isatty():
+            args.append('-')
         if editor == 'vim':
             args.append('+startinsert')
         with tempfile.NamedTemporaryFile(suffix='.tmp') as temp_file:
@@ -35,11 +40,27 @@ class FindNotesEntryPoint(common.EntryPoint):
     description = 'Search for notes in the dNote database'
 
     def run(self, options):
-        table = notes.NoteTable()
-        table.find_notes(options.search)
+        collection = notes.NoteCollection()
+        collection.init_tables()
+        search_fields = {
+            'name': options.name,
+            'body': options.body,
+            'tags': options.tags,
+            'host': options.host,
+        }
+
+        # collection.date_search(options.range)
+        collection.text_search(
+            search_fields, exact=options.exact)
 
     def build_parser(self, parser):
-        parser.add_argument('search', nargs='?')
+        parser.add_argument('--id', '-i')
+        parser.add_argument('--name', '-n')
+        parser.add_argument('--body', '-b')
+        parser.add_argument('--tags', '-t')
+        parser.add_argument('--host', '-o')
+        parser.add_argument('--range', '-r')
+        parser.add_argument('--exact', '-e', action='store_true')
 
 
 class ConfigEntryPoint(common.EntryPoint):

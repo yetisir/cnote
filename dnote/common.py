@@ -1,17 +1,10 @@
 import argparse
 from abc import ABC, abstractmethod
 
-from . import utils, aws
+from . import aws
 
 
 class EntryPoint(ABC):
-
-    @utils.cli_args
-    def main(self, args=None):
-        parser = argparse.ArgumentParser(description=self.description)
-        self.build_parser(parser)
-        parameters = parser.parse_args(args)
-        self.run(parameters)
 
     @property
     @abstractmethod
