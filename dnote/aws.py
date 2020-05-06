@@ -12,5 +12,5 @@ except:
     dynamodb = boto3.resource(
         'dynamodb',
         endpoint_url=config.dynamodb_endpoint,
-        region=config.dynamodb_region)
+        region_name=config.dynamodb_region)
 
