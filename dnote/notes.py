@@ -18,12 +18,11 @@ class Text:
 
     @property
     def tokens(self):
-        tokens = set(nltk.word_tokenize(self.raw.lower()))
+        raw_tokens = set(nltk.word_tokenize(self.raw.lower()))
         stemmer = nltk.PorterStemmer()
-        stemmed_tokens = set(stemmer.stem(token) for token in tokens)
-        tokens.update(stemmed_tokens)
+        stemmed_tokens = set(stemmer.stem(token) for token in raw_tokens)
 
-        tokens = [''.join(token) for token in tokens]
+        tokens = [''.join(token) for token in stemmed_tokens]
 
         return {self.token_id(token): token for token in tokens}
 
@@ -33,12 +32,12 @@ class Text:
 
 
 class Note:
-    def __init__(self, body, name, tags=None, **kwargs):
-        self.name = name if name else f'{getpass.getuser()}\'s Note'
+    def __init__(self, body, name=None, tags=None, **kwargs):
+        self.name = name.strip() if name else f'{getpass.getuser()}\'s Note'
         self.body = body.strip()
         self.timestamp = self._get_timestamp()
         self.host = socket.gethostname()
-        self.tags = tags if tags else []
+        self.tags = [tag.strip() for tag in tags] if tags else []
         self.id = self._get_id()
 
     @classmethod
@@ -73,12 +72,9 @@ class Note:
         }
 
     def show(self):
-        print(f'"{self.name}" [{self.host}@{self.datetime}]')
+        print(f'{self.id} ({self.name}) [{self.host}@{self.datetime}]')
         for line in self.body.split('\n'):
             print(f'\t{line}')
-
-    def _get_timestamp(self):
-        return int(datetime.datetime.now().timestamp())
 
     def _get_id(self):
         hash_list = [
@@ -90,6 +86,10 @@ class Note:
         ]
 
         return hashlib.md5(str(hash_list).encode()).hexdigest()
+
+    @staticmethod
+    def _get_timestamp():
+        return int(datetime.datetime.now().timestamp())
 
 
 class NoteCollection(common.DynamoDBTable):

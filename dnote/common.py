@@ -5,6 +5,7 @@ from . import aws
 
 
 class EntryPoint(ABC):
+    aliases = []
 
     @property
     @abstractmethod
