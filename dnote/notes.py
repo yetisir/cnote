@@ -73,8 +73,6 @@ class Note:
             print(f'\t{line}')
 
     def _get_id(self):
-        print('timestamp', self.timestamp)
-
         note_hash = hashlib.md5()
         note_hash.update(self.name.encode())
         note_hash.update(self.body.encode())

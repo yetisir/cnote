@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 import socket
 import getpass
-from unittest import mock
 
 import pytest
 from botocore import stub
