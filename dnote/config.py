@@ -1,4 +1,5 @@
 import configurator
+import nltk
 
 # TODO: streamline config settings
 
@@ -14,5 +15,5 @@ def get_config(config_dir='~/.dnote.yml'):
 
     return default_config + user_config
 
-
+nltk.download('punkt', quiet=True)
 config = get_config()

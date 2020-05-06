@@ -1,15 +1,10 @@
 import argparse
 
-import nltk
-
 from . import utils, entrypoints
 
 
 @utils.cli_args
 def main(args=None):
-    # ensure nltk dataset is downloaded
-    nltk.download('punkt', quiet=True)
-
     # create the primary parser
     parser = argparse.ArgumentParser(description='dNote')
     subparsers = parser.add_subparsers(dest='entry_point')
