@@ -83,9 +83,7 @@ Support for removing notes is currently being implemented. Please check back soo
 Support for updating notes is currently being implemented. Please check back soon.
 
 ## Contributing
- Pull requests are welcome. For major changes, please open an issue first to discuss what you would   like to change.
- 
-Please make sure to update tests as appropriate.
+Bugs? Missing features? Issues and pull requests are more than welcome.
  
 ## License
 dNote is licensed under the  [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
