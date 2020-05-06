@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='dNote',
-    version='0.2.0',
+    version='0.2.1',
     description='Simple CLI utility for managing notes with AWS',
     url='https://github.com/yetisir/dnote',
     author='M. Yetisir',

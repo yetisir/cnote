@@ -19,9 +19,9 @@ python -m pip install dNote
 ## Usage
 
 ```bash
-dnote add 'this is a new note!'
-dnote add 'this is another new note.'
-dnote add 'this is an old note'
+dnote new 'this is a new note!'
+dnote new 'this is another new note.'
+dnote new 'this is an old note'
 dnote find 'new'
 ```
 
