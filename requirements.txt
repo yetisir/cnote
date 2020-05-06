@@ -4,7 +4,6 @@
 #
 #    pip-compile
 #
--e file:///home/dependabot/dependabot-updater/tmp/dependabot_20200506-71-xrl4qi  # via -r requirements.in
 attrs==19.3.0             # via pytest
 boto3==1.13.3             # via sanitized-package
 botocore==1.16.3          # via boto3, s3transfer
