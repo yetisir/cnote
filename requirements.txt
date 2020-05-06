@@ -5,21 +5,20 @@
 #    pip-compile
 #
 attrs==19.3.0             # via pytest
-boto3==1.13.2             # via dnote
-botocore==1.16.2          # via boto3, s3transfer
+boto3==1.13.2             # via sanitized-package
+botocore==1.16.3          # via boto3, s3transfer
 certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
 click==7.1.2              # via mkdocs, nltk, pip-tools
-configurator[yaml]==2.0.0  # via dnote
+configurator[yaml]==2.0.0  # via sanitized-package
 coverage==5.1             # via coveralls, pytest-cov
-coveralls==2.0.0          # via dnote
+coveralls==2.0.0          # via sanitized-package
 docopt==0.6.2             # via coveralls
 docutils==0.15.2          # via botocore
 entrypoints==0.3          # via flake8
 flake8==3.7.9             # via pytest-flake8
 future==0.18.2            # via lunr
 idna==2.9                 # via requests
-importlib-metadata==1.6.0  # via pluggy, pytest
 jinja2==2.11.2            # via mkdocs
 jmespath==0.9.5           # via boto3, botocore
 joblib==0.14.1            # via nltk
@@ -28,19 +27,19 @@ lunr[languages]==0.5.6    # via mkdocs
 markdown==3.2.1           # via mkdocs
 markupsafe==1.1.1         # via jinja2
 mccabe==0.6.1             # via flake8
-mkdocs==1.1               # via dnote
+mkdocs==1.1               # via sanitized-package
 more-itertools==8.2.0     # via pytest
-nltk==3.5                 # via dnote, lunr
+nltk==3.5                 # via lunr, sanitized-package
 packaging==20.3           # via pytest
-pip-tools==5.1.1          # via dnote
+pip-tools==5.1.1          # via sanitized-package
 pluggy==0.13.1            # via pytest
 py==1.8.1                 # via pytest
 pycodestyle==2.5.0        # via flake8
 pyflakes==2.1.1           # via flake8
 pyparsing==2.4.7          # via packaging
-pytest-cov==2.8.1         # via dnote
-pytest-flake8==1.0.5      # via dnote
-pytest==5.4.1             # via dnote, pytest-cov, pytest-flake8
+pytest-cov==2.8.1         # via sanitized-package
+pytest-flake8==1.0.5      # via sanitized-package
+pytest==5.4.1             # via pytest-cov, pytest-flake8, sanitized-package
 python-dateutil==2.8.1    # via botocore
 pyyaml==5.3.1             # via configurator, mkdocs
 regex==2020.4.4           # via nltk
@@ -51,7 +50,6 @@ tornado==6.0.4            # via livereload, mkdocs
 tqdm==4.46.0              # via nltk
 urllib3==1.25.9           # via botocore, requests
 wcwidth==0.1.9            # via pytest
-zipp==3.1.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
