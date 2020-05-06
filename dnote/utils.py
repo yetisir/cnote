@@ -2,6 +2,7 @@ import sys
 import functools
 import contextlib
 import os
+import datetime
 
 
 def cli_args(function):
@@ -25,3 +26,7 @@ def suppress_std(std_type):
         setattr(sys, std, devnull)
     yield
     setattr(sys, std, save_std)
+
+
+def now():
+    return datetime.datetime.utcnow()
