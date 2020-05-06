@@ -140,6 +140,9 @@ class NoteCollection(common.DynamoDBTable):
             for note_ids in field_search_map.values():
                 note_id_sets.append(note_ids)
 
+        if not note_id_sets:
+            return
+
         all_note_ids = set.intersection(*note_id_sets)
 
         if not all_note_ids:
