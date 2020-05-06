@@ -54,39 +54,33 @@ We may find ourselves wanting to use the output of another program as a note. Al
 dNote indexes all notes as they are written. The index is written to a separate table and used to lookup the specified search terms. To limit the number of index entries and maximize the likelihood of a search returning the intended result, a stemming algorithm from [NLTK](https://www.nltk.org/) is used to group similar words into the same search token (e.g. 'run', 'runs', 'runner', and 'running' would all return the same search results). This stemming approach makes the search experience more natural than regex approaches. That being said, the `--exact` (or `-e`) flag will ignore the stem token matches and yield only exact matches. 
 
 Finding notes can be accomplished with the `find` command. To search the content of the note we can We can specify a time range with the `--range` (or `-r`) flag and include up to four text fields in the search: 
-* `--name` (or `-n`)
-* `--body` (or `-b`)
-* `--host` (or `-h`)
-* `--tags` (or `-t`)
+* `--name` (or `-n`) - name of the note
+* `--body` (or `-b`) - content of the note
+* `--host` (or `-h`) - computer name on which the note was written
+* `--tags` (or `-t`) - any specified tags
 
-
-
+For example, we can query all notes that contain mentions of words that share the stem of 'test' (e.g. 'tests', 'testing', 'tester', etc.).:
 ```bash
 dnote find -b 'test'
 ```
-This will return all notes that contain mentions of words that share the stem of 'test' (e.g. 'tests', 'testing', 'tester', etc.). 
 
-We can also specify multiple search terms:
+We can also specify multiple search terms in a single field. This will return notes that have mentions of both 'test' and 'note':
 ```bash
 dnote find -b 'test note'
 ```
-This will return notes that have mentions of <em>both</em> 'test' and 'note'
 
-There are 3 other text fields that can be included in the search: 
-* `--name` (or `-n`)
-* `--body` (or `-b`)
-* `--host` (or `-h`)
-* `--tags` (or `-t`)
+To query multiple fields, we just add them to the search query. If we were only interested in the test notes that were written from a system called 'home-computer', we could update the previous command to be as follows:
+```bash
+dnote find -b 'test note' -h 'home-computer'
+```
 
-With respect to more advanced queries, the decision to use a predefined text index limits us from more sophisticated pattern matching like regex since those approaches require iteration through the contents of the file and can't be done exclusively with an index.
-
-
+With respect to more advanced queries, the decision to use a predefined text index limits us from more sophisticated pattern matching like regex since those approaches require iteration through the contents of the file and can't be done exclusively with an index. This can be accomplished in a future release however, by integrating AWS Elasticsearch or using local caching. That being said, Elasticsearch is not currently included in the AWS free-tier which makes it a bit inaccessible. 
 
 ### Removing Notes
+Support for removing notes is currently being implemented. Please check back soon.
 
 ### Updating Notes
-
-## Implementation Details
+Support for updating notes is currently being implemented. Please check back soon.
 
 ## Contributing
  Pull requests are welcome. For major changes, please open an issue first to discuss what you would   like to change.
@@ -94,5 +88,5 @@ With respect to more advanced queries, the decision to use a predefined text ind
 Please make sure to update tests as appropriate.
  
 ## License
-[GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
+dNote is licensed under the  [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
 
