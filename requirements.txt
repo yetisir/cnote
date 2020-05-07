@@ -14,7 +14,7 @@ configurator[yaml]==2.0.0  # via sanitized-package
 coverage==5.1             # via coveralls, pytest-cov
 coveralls==2.0.0          # via sanitized-package
 docopt==0.6.2             # via coveralls
-docutils==0.15.2          # via botocore
+docutils==0.16          # via botocore
 entrypoints==0.3          # via flake8
 flake8==3.7.9             # via pytest-flake8
 future==0.18.2            # via lunr
