@@ -2,6 +2,9 @@ import os
 import sys
 import tempfile
 import subprocess
+import termios
+
+import click
 
 from . import common, notes
 
@@ -42,16 +45,17 @@ class FindNotesEntryPoint(common.EntryPoint):
 
         # collection.date_search(options.range)
         collection.text_search(
-            search_fields, exact=options.exact)
+            search_fields, exact=options.exact, quiet=options.quiet)
 
     def build_parser(self, parser):
         parser.add_argument('--id', '-i')
-        parser.add_argument('--name', '-n')
-        parser.add_argument('--body', '-b')
-        parser.add_argument('--tags', '-t')
-        parser.add_argument('--host', '-o')
-        parser.add_argument('--range', '-r')
+        parser.add_argument('--range', '-r', nargs='+')
+        parser.add_argument('--name', '-n', nargs='+')
+        parser.add_argument('--body', '-b', nargs='+')
+        parser.add_argument('--tags', '-t', nargs='+')
+        parser.add_argument('--host', '-o', nargs='+')
         parser.add_argument('--exact', '-e', action='store_true')
+        parser.add_argument('--quiet', '-q', action='store_true')
 
 
 class RemoveNoteEntryPoint(common.EntryPoint):
@@ -115,17 +119,11 @@ def initialize():
 
 
 def launch_editor():
-    editor = os.environ.get('EDITOR', 'vim')
-    args = [editor]
+
+    stty_attrs = termios.tcgetattr(sys.stdout)
+
     note = sys.stdin.read() if not sys.stdin.isatty() else ''
+    note = click.edit(note, require_save=False)
 
-    if editor == 'vim':
-        args.append('+startinsert')
-
-    with tempfile.NamedTemporaryFile() as temp_file:
-        temp_file.write(note.encode())
-        temp_file.flush()
-        args.append(temp_file.name)
-        subprocess.call(args)
-        temp_file.seek(0)
-        return temp_file.read().decode()
+    termios.tcsetattr(sys.stdout, termios.TCSAFLUSH, stty_attrs)
+    return note
