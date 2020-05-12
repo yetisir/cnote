@@ -110,10 +110,16 @@ class ShowNoteEntryPoint(common.EntryPoint):
     description = 'Displays a full note from the dNote database'
 
     def run(self, options):
-        pass
+        collection = notes.NoteCollection()
+        collection.init_tables()
+
+        ids = get_input_ids(options.ids)
+        for note in collection.get_notes_from_ids(ids):
+            note.show(max_lines=options.max)
 
     def build_parser(self, parser):
-        parser.add_argument('--id', '-i', required=True)
+        parser.add_argument('--ids', '-i', nargs='+')
+        parser.add_argument('--max', '-m', type=int)
 
 
 class ConfigEntryPoint(common.EntryPoint):

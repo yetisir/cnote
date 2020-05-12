@@ -78,7 +78,7 @@ class Note:
         for line in lines[:max_lines]:
             print(f'\t{line}')
 
-        if len(lines) > max_lines:
+        if max_lines and len(lines) > max_lines:
             missing_lines = len(lines) - max_lines
             print(f'[Truncated {missing_lines} lines] ...\n')
 
