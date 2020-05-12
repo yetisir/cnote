@@ -42,7 +42,7 @@ pytest-flake8==1.0.5      # via sanitized-package
 pytest==5.4.1             # via pytest-cov, pytest-flake8, sanitized-package
 python-dateutil==2.8.1    # via botocore
 pyyaml==5.3.1             # via configurator, mkdocs
-regex==2020.4.4           # via nltk
+regex==2020.5.7           # via nltk
 requests==2.23.0          # via coveralls
 s3transfer==0.3.3         # via boto3
 six==1.14.0               # via livereload, lunr, packaging, pip-tools, python-dateutil
