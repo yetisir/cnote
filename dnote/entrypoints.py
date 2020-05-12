@@ -32,6 +32,9 @@ class FindNotesEntryPoint(common.EntryPoint):
     description = 'Search for notes in the dNote database'
 
     def run(self, options):
+        if options.range and len(options.range) > 2:
+            raise ValueError('Number of range arguments exceeds 2')
+
         collection = notes.NoteCollection()
         collection.init_tables()
         search_fields = {
@@ -43,7 +46,8 @@ class FindNotesEntryPoint(common.EntryPoint):
 
         # collection.date_search(options.range)
         collection.text_search(
-            search_fields, exact=options.exact, quiet=options.quiet)
+            search_fields, exact=options.exact, quiet=options.quiet,
+            datetime_range=options.range)
 
     def build_parser(self, parser):
         parser.add_argument('--id', '-i')

@@ -1,8 +1,10 @@
 import hashlib
 import socket
 import getpass
-import datetime
+from datetime import datetime
+
 import nltk
+import dateparser
 
 from . import aws, index, common, utils
 
@@ -45,7 +47,7 @@ class Note:
 
     @property
     def datetime(self):
-        return datetime.datetime.fromtimestamp(self.timestamp)
+        return datetime.fromtimestamp(self.timestamp)
 
     @property
     def tokens(self):
@@ -116,7 +118,7 @@ class NoteCollection(common.DynamoDBTable):
         response = self.table.get_item(Key={'id': id})
         return Note.from_dict(response)
 
-    def get_notes_from_ids(self, ids):
+    def get_notes_from_ids(self, ids, datetime_range=(None, None)):
         notes = aws.dynamodb.batch_get_item(
             RequestItems={
                 self.table.name: {
@@ -141,21 +143,42 @@ class NoteCollection(common.DynamoDBTable):
         for note in notes:
             note.show(quiet=quiet)
 
-    def text_search(self, field_searches, exact=False, quiet=False):
+    def text_search(self, field_searches, datetime_range=None, exact=False, quiet=False):
         field_searches = {
             field: searches for field, searches in field_searches.items()
             if searches}
 
+        datetime_range = self._validate_range(datetime_range)
+        print(datetime_range)
         notes = self.get_matching_search_notes(field_searches)
 
         if exact:
             notes = self._exact_match_notes(notes, field_searches)
 
+        notes = [note for note in notes if datetime_range[0] < note.datetime < datetime_range[1]]
+
         if not notes:
             return
-
         notes.sort(key=lambda note: note.timestamp)
         self.show_notes(notes, quiet=quiet)
+
+    def _validate_range(self, datetime_range):
+        now = datetime.utcnow()
+        if not datetime_range:
+            return (datetime.fromtimestamp(0), now)
+        dates = [dateparser.parse(date, settings={'TO_TIMEZONE': 'UTC'}) for date in datetime_range]
+        if None in dates:
+            raise ValueError('Unable to parse date range')
+
+        if len(dates) == 1:
+            end = dates[0]
+            start = now
+        elif len(dates) == 2:
+            end = max(dates)
+            start = min(dates)
+
+        return (start, end)
+
 
     def get_matching_search_notes(self, field_searches):
         if not field_searches:
