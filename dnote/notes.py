@@ -16,7 +16,6 @@ class Text:
         raw_tokens = set(nltk.word_tokenize(self.raw.lower()))
         stemmer = nltk.LancasterStemmer()
         stemmed_tokens = set(stemmer.stem(token) for token in raw_tokens)
-        print(stemmed_tokens)
         tokens = [''.join(token) for token in stemmed_tokens]
 
         return {self.token_id(token): token for token in tokens}
