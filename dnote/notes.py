@@ -136,6 +136,10 @@ class NoteCollection(common.DynamoDBTable):
         field_searches = {
             field: searches for field, searches in field_searches.items()
             if searches}
+
+        if not field_searches:
+            return self.table.scan()
+
         search_map = self._create_search_map(field_searches)
 
         note_id_sets = []

@@ -61,10 +61,11 @@ class FindNotesEntryPoint(common.EntryPoint):
 class RemoveNoteEntryPoint(common.EntryPoint):
     name = 'remove'
     aliases = ['r', 'rm']
-    description = 'Removes a note from the dNote database'
+    description = 'Removes notes from the dNote database'
 
     def run(self, options):
-        pass
+        collection = notes.NoteCollection()
+        collection.init_tables()
 
     def build_parser(self, parser):
         parser.add_argument('--id', '-i', nargs='+', required=True)
