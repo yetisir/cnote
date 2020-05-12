@@ -24,7 +24,6 @@ class NewNoteEntryPoint(common.EntryPoint):
         parser.add_argument('--body', '-b')
         parser.add_argument('--name', '-n')
         parser.add_argument('--tags', '-t', nargs='+')
-        parser.add_argument('--file', '-f')
 
 
 class FindNotesEntryPoint(common.EntryPoint):
@@ -80,18 +79,30 @@ class EditNoteEntryPoint(common.EntryPoint):
 
     def run(self, options):
         ids = get_input_ids(options.ids)
-        if len(ids) >= 1:
+        if len(ids) > 1:
             raise ValueError('More than one id specified')
+
+        id = ids[0]
+
         collection = notes.NoteCollection()
         collection.init_tables()
 
-        # TODO: update table
+        note = collection.get_note_by_id(id)
+        if not note:
+            return
+
+        body = options.body if options.body else launch_editor(note.body)
+        name = options.name if options.name else note.name
+        tags = options.tags if options.tags else note.tags
+
+        collection.add_note(
+            body, name=options.name, tags=options.tags)
 
     def build_parser(self, parser):
         parser.add_argument('--id', '-i', required=True)
+        parser.add_argument('--body', '-b')
         parser.add_argument('--name', '-n')
         parser.add_argument('--tags', '-t', nargs='+')
-        parser.add_argument('--open', '-o', action='store_true')
 
 
 class ShowNoteEntryPoint(common.EntryPoint):
@@ -125,11 +136,16 @@ def initialize():
     return entry_points
 
 
-def launch_editor():
+def launch_editor(text=None):
 
     stty_attrs = termios.tcgetattr(sys.stdout)
 
-    note = sys.stdin.read() if not sys.stdin.isatty() else ''
+    if text:
+        note = text
+    elif not sys.stdin.isatty():
+        note = sys.stdin.read()
+    else:
+        note = ''
     note = click.edit(note, require_save=False)
 
     termios.tcsetattr(sys.stdout, termios.TCSAFLUSH, stty_attrs)

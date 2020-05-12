@@ -68,13 +68,19 @@ class Note:
             'tags': self.tags,
         }
 
-    def show(self, quiet=False):
+    def show(self, quiet=False, max_lines=10):
         if quiet:
             print(self.id)
             return
+
         print(f'{self.id} ({self.name}) [{self.host}@{self.datetime}]')
-        for line in self.body.split('\n'):
+        lines = self.body.split('\n')
+        for line in lines[:max_lines]:
             print(f'\t{line}')
+
+        if len(lines) > max_lines:
+            missing_lines = len(lines) - max_lines
+            print(f'[Truncated {missing_lines} lines] ...\n')
 
     def _get_id(self):
         note_hash = hashlib.md5()
@@ -114,6 +120,11 @@ class NoteCollection(common.DynamoDBTable):
         self.index.add_note(note)
         note.show()
 
+    def update_note(self, id, note):
+        self.table.put_item(Item=note.to_dict())
+        self.index.add_note(note) #TODO: remove old note index references
+        note.show()
+
     def get_note_from_id(self, id):
         response = self.table.get_item(Key={'id': id})
         return Note.from_dict(response)
@@ -134,6 +145,8 @@ class NoteCollection(common.DynamoDBTable):
             for id in ids:
                 batch.delete_item(Key={'id': id})
 
+        #TODO: remove old note index references
+
     def get_notes_from_scan(self):
         notes = self.table.scan()['Items']
         return [Note.from_dict(note) for note in notes]
@@ -151,7 +164,6 @@ class NoteCollection(common.DynamoDBTable):
             if searches}
 
         datetime_range = self._validate_range(datetime_range)
-        print(datetime_range)
         notes = self.get_matching_search_notes(field_searches)
 
         if exact:
