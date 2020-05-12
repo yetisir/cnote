@@ -12,6 +12,7 @@ setup(
         'boto3>=1.13',
         'click>=7.1',
         'configurator[yaml]>=2.0',
+        'dateparser>=0.7',
         'nltk>=3.5',
     ],
     extras_require={
