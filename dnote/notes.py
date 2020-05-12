@@ -122,7 +122,7 @@ class NoteCollection(common.DynamoDBTable):
 
     def update_note(self, id, note):
         self.table.put_item(Item=note.to_dict())
-        self.index.add_note(note) #TODO: remove old note index references
+        self.index.add_note(note)  # TODO: remove old note index references
         note.show()
 
     def get_note_from_id(self, id):
@@ -145,7 +145,7 @@ class NoteCollection(common.DynamoDBTable):
             for id in ids:
                 batch.delete_item(Key={'id': id})
 
-        #TODO: remove old note index references
+        # TODO: remove old note index references
 
     def get_notes_from_scan(self):
         notes = self.table.scan()['Items']

@@ -92,8 +92,6 @@ class EditNoteEntryPoint(common.EntryPoint):
             return
 
         body = options.body if options.body else launch_editor(note.body)
-        name = options.name if options.name else note.name
-        tags = options.tags if options.tags else note.tags
 
         collection.add_note(
             body, name=options.name, tags=options.tags)
