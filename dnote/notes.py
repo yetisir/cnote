@@ -2,7 +2,6 @@ import hashlib
 import socket
 import getpass
 import datetime
-
 import nltk
 
 from . import aws, index, common, utils
@@ -108,6 +107,8 @@ class NoteCollection(common.DynamoDBTable):
 
     def add_note(self, body, name=None, tags=None):
         note = Note(body, name=name, tags=tags)
+        if not note.body:
+            return
         self.table.put_item(Item=note.to_dict())
         self.index.add_note(note)
         note.show()
@@ -127,8 +128,13 @@ class NoteCollection(common.DynamoDBTable):
 
         return [Note.from_dict(note) for note in notes]
 
+    def delete_notes(self, ids):
+        with self.table.batch_writer() as batch:
+            for id in ids:
+                batch.delete_item(Key={'id': id})
+
     def get_notes_from_scan(self):
-        notes = self.table.scan()
+        notes = self.table.scan()['Items']
         return [Note.from_dict(note) for note in notes]
 
     @staticmethod

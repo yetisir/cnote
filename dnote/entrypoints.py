@@ -1,5 +1,6 @@
 import sys
 import termios
+import re
 
 import click
 
@@ -14,12 +15,14 @@ class NewNoteEntryPoint(common.EntryPoint):
     def run(self, options):
         collection = notes.NoteCollection()
         collection.init_tables()
-        body = launch_editor()
-        if body:
-            collection.add_note(
-                body, name=options.name, tags=options.tags)
+
+        body = options.body if options.body else launch_editor()
+
+        collection.add_note(
+            body, name=options.name, tags=options.tags)
 
     def build_parser(self, parser):
+        parser.add_argument('--body', '-b')
         parser.add_argument('--name', '-n')
         parser.add_argument('--tags', '-t', nargs='+')
         parser.add_argument('--file', '-f')
@@ -61,11 +64,22 @@ class RemoveNoteEntryPoint(common.EntryPoint):
     description = 'Removes notes from the dNote database'
 
     def run(self, options):
+        piped_input = sys.stdin.read() if not sys.stdin.isatty() else ''
+        ids = []
+
+        if piped_input:
+            ids.extend(piped_input.split())
+        if options.ids:
+            ids.extend(options.ids)
+
+        ids = [id for id in ids if re.match(r'([a-fA-F\d]{32})', id)]
+
         collection = notes.NoteCollection()
         collection.init_tables()
+        collection.delete_notes(ids)
 
     def build_parser(self, parser):
-        parser.add_argument('--id', '-i', nargs='+', required=True)
+        parser.add_argument('--ids', '-i', nargs='+')
 
 
 class EditNoteEntryPoint(common.EntryPoint):
