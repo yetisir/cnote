@@ -135,6 +135,7 @@ def launch_editor():
     termios.tcsetattr(sys.stdout, termios.TCSAFLUSH, stty_attrs)
     return note
 
+
 def get_input_ids(ids):
     piped_input = sys.stdin.read() if not sys.stdin.isatty() else ''
     ids = ids if ids else []

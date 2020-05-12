@@ -96,7 +96,7 @@ def test_tokens(user, host, datetime_now):
             'a2a551a6458a8de22446cc76d639a9e9': 'is',
             '86260f27f78d5a8a6412c2a99c9d5c89': 'sampl',
             '9033e0e305f247c0c3c80d0c7848c8b3': '!',
-            'aad653ca3ee669635f2938b73098b6d7': 'note',
+            'd529e941509eb9e9b9cfaeae1fe7ca23': 'not',
             'd9aebf7d5a83db9709fe0af7b92ab73a': 'thi',
         },
         'host': {
@@ -104,8 +104,8 @@ def test_tokens(user, host, datetime_now):
         },
         'name': {
             '8b9035807842a4e4dbe009f3f1478127': 'custom',
-            'aad653ca3ee669635f2938b73098b6d7': 'note',
-            'b068931cc450442b63f5b3d276ea4297': 'name',
+            'd529e941509eb9e9b9cfaeae1fe7ca23': 'not',
+            '22c78aadb8d25a53ca407fae265a7154': 'nam',
         },
         'tags': {
             '8b9035807842a4e4dbe009f3f1478127': 'custom',

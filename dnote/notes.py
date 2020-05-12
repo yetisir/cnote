@@ -143,7 +143,9 @@ class NoteCollection(common.DynamoDBTable):
         for note in notes:
             note.show(quiet=quiet)
 
-    def text_search(self, field_searches, datetime_range=None, exact=False, quiet=False):
+    def text_search(
+            self, field_searches, datetime_range=None, exact=False,
+            quiet=False):
         field_searches = {
             field: searches for field, searches in field_searches.items()
             if searches}
@@ -155,7 +157,9 @@ class NoteCollection(common.DynamoDBTable):
         if exact:
             notes = self._exact_match_notes(notes, field_searches)
 
-        notes = [note for note in notes if datetime_range[0] < note.datetime < datetime_range[1]]
+        notes = [
+            note for note in notes
+            if datetime_range[0] < note.datetime < datetime_range[1]]
 
         if not notes:
             return
@@ -166,7 +170,9 @@ class NoteCollection(common.DynamoDBTable):
         now = datetime.utcnow()
         if not datetime_range:
             return (datetime.fromtimestamp(0), now)
-        dates = [dateparser.parse(date, settings={'TO_TIMEZONE': 'UTC'}) for date in datetime_range]
+        dates = [
+            dateparser.parse(date, settings={'TO_TIMEZONE': 'UTC'})
+            for date in datetime_range]
         if None in dates:
             raise ValueError('Unable to parse date range')
 
@@ -178,7 +184,6 @@ class NoteCollection(common.DynamoDBTable):
             start = min(dates)
 
         return (start, end)
-
 
     def get_matching_search_notes(self, field_searches):
         if not field_searches:
