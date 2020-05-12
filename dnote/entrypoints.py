@@ -1,7 +1,4 @@
-import os
 import sys
-import tempfile
-import subprocess
 import termios
 
 import click
