@@ -10,7 +10,7 @@ setup(
     author_email='yetisir@gmail.com',
     install_requires=[
         'boto3>=1.13',
-        'clock>=7.1',
+        'click>=7.1',
         'configurator[yaml]>=2.0',
         'nltk>=3.5',
     ],
