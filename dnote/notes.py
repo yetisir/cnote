@@ -127,6 +127,10 @@ class NoteCollection(common.DynamoDBTable):
 
         return [Note.from_dict(note) for note in notes]
 
+    def get_notes_from_scan(self):
+        notes = self.table.scan()
+        return [Note.from_dict(note) for note in notes]
+
     @staticmethod
     def show_notes(notes, quiet=False):
         for note in notes:
@@ -137,8 +141,20 @@ class NoteCollection(common.DynamoDBTable):
             field: searches for field, searches in field_searches.items()
             if searches}
 
+        notes = self.get_matching_search_notes(field_searches)
+
+        if exact:
+            notes = self._exact_match_notes(notes, field_searches)
+
+        if not notes:
+            return
+
+        notes.sort(key=lambda note: note.timestamp)
+        self.show_notes(notes, quiet=quiet)
+
+    def get_matching_search_notes(self, field_searches):
         if not field_searches:
-            return self.table.scan()
+            return self.get_notes_from_scan()
 
         search_map = self._create_search_map(field_searches)
 
@@ -149,23 +165,14 @@ class NoteCollection(common.DynamoDBTable):
                 note_id_sets.append(note_ids)
 
         if not note_id_sets:
-            return
+            return []
 
         all_note_ids = set.intersection(*note_id_sets)
 
         if not all_note_ids:
-            return
+            return []
 
-        notes = self.get_notes_from_ids(all_note_ids)
-
-        if exact:
-            notes = self._exact_match_notes(notes, field_searches)
-
-        if not notes:
-            return
-
-        notes.sort(key=lambda note: note.timestamp)
-        self.show_notes(notes, quiet=quiet)
+        return self.get_notes_from_ids(all_note_ids)
 
     def _exact_match_notes(self, notes, field_searches):
         exact_match_notes = []

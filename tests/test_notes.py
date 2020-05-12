@@ -6,12 +6,12 @@ import conftest
 def test_initialization_1(user, host, datetime_now):
     test_input = notes.Note('This is a sample note!      ')
 
-    test_output_name = f'{conftest.TEST_USER}\'s Note'
+    test_output_name = f'{conftest.TEST_USER}-note-589fc654'
     test_output_body = 'This is a sample note!'
     test_output_timestamp = int(conftest.TEST_TIMESTAMP.timestamp())
     test_output_host = conftest.TEST_HOST
     test_output_tags = []
-    test_output_id = '331c940bfdc43eeb9f87818c9c60948d'
+    test_output_id = '589fc654334242778b7f82fd97f88435'
 
     assert test_input.name == test_output_name
     assert test_input.body == test_output_body
