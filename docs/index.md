@@ -62,17 +62,17 @@ Finding notes can be accomplished with the `find` command. To search the content
 
 For example, we can query all notes that contain mentions of words that share the stem of 'test' (e.g. 'tests', 'testing', 'tester', etc.).:
 ```bash
-dnote find -b 'test'
+dnote find -b test
 ```
 
 We can also specify multiple search terms in a single field. This will return notes that have mentions of both 'test' and 'note':
 ```bash
-dnote find -b 'test note'
+dnote find -b test note
 ```
 
-To query multiple fields, we just add them to the search query. If we were only interested in the test notes that were written from a system called 'home-computer', we could update the previous command to be as follows:
+To query multiple fields, we just add them to the search query. If we were only interested in the test notes that were written from a system called 'homecomputer', we could update the previous command to be as follows:
 ```bash
-dnote find -b 'test note' -h 'home-computer'
+dnote find -b test note -h homecomputer
 ```
 
 With respect to more advanced queries, the decision to use a predefined text index limits us from more sophisticated pattern matching like regex since those approaches require iteration through the contents of the file and can't be done exclusively with an index. This can be accomplished in a future release however, by integrating AWS Elasticsearch or using local caching. That being said, Elasticsearch is not currently included in the AWS free-tier which makes it a bit inaccessible. 

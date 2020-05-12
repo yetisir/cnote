@@ -1,12 +1,6 @@
-#version: 2
-#mkdocs:
-#  configuration: mkdocs.yml
-build:
-  image: latest
-python:
-  version: 3.6
-  install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - docs
+version: 2
+mkdocs:
+  configuration: mkdocs.yml
+  fail_on_warning: true
+
+formats: all

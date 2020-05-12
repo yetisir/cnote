@@ -1,9 +1,10 @@
 import hashlib
 import socket
 import getpass
-import datetime
+from datetime import datetime
 
 import nltk
+import dateparser
 
 from . import aws, index, common, utils
 
@@ -15,9 +16,8 @@ class Text:
     @property
     def tokens(self):
         raw_tokens = set(nltk.word_tokenize(self.raw.lower()))
-        stemmer = nltk.PorterStemmer()
+        stemmer = nltk.LancasterStemmer()
         stemmed_tokens = set(stemmer.stem(token) for token in raw_tokens)
-
         tokens = [''.join(token) for token in stemmed_tokens]
 
         return {self.token_id(token): token for token in tokens}
@@ -29,12 +29,13 @@ class Text:
 
 class Note:
     def __init__(self, body, name=None, tags=None, **kwargs):
-        self.name = name.strip() if name else f'{getpass.getuser()}\'s Note'
+        self.name = name.strip() if name else f'{getpass.getuser()}-note'
         self.body = body.strip()
         self.timestamp = self._get_timestamp()
         self.host = socket.gethostname()
         self.tags = [tag.strip() for tag in tags] if tags else []
         self.id = self._get_id()
+        self.name = self.name if name else f'{self.name}-{self.id[:8]}'
 
     @classmethod
     def from_dict(cls, attributes):
@@ -46,7 +47,7 @@ class Note:
 
     @property
     def datetime(self):
-        return datetime.datetime.fromtimestamp(self.timestamp)
+        return datetime.fromtimestamp(self.timestamp)
 
     @property
     def tokens(self):
@@ -67,10 +68,19 @@ class Note:
             'tags': self.tags,
         }
 
-    def show(self):
+    def show(self, quiet=False, max_lines=10):
+        if quiet:
+            print(self.id)
+            return
+
         print(f'{self.id} ({self.name}) [{self.host}@{self.datetime}]')
-        for line in self.body.split('\n'):
+        lines = self.body.split('\n')
+        for line in lines[:max_lines]:
             print(f'\t{line}')
+
+        if max_lines and len(lines) > max_lines:
+            missing_lines = len(lines) - max_lines
+            print(f'[Truncated {missing_lines} lines] ...\n')
 
     def _get_id(self):
         note_hash = hashlib.md5()
@@ -104,15 +114,22 @@ class NoteCollection(common.DynamoDBTable):
 
     def add_note(self, body, name=None, tags=None):
         note = Note(body, name=name, tags=tags)
+        if not note.body:
+            return
         self.table.put_item(Item=note.to_dict())
         self.index.add_note(note)
+        note.show()
+
+    def update_note(self, id, note):
+        self.table.put_item(Item=note.to_dict())
+        self.index.add_note(note)  # TODO: remove old note index references
         note.show()
 
     def get_note_from_id(self, id):
         response = self.table.get_item(Key={'id': id})
         return Note.from_dict(response)
 
-    def get_notes_from_ids(self, ids):
+    def get_notes_from_ids(self, ids, datetime_range=(None, None)):
         notes = aws.dynamodb.batch_get_item(
             RequestItems={
                 self.table.name: {
@@ -123,15 +140,67 @@ class NoteCollection(common.DynamoDBTable):
 
         return [Note.from_dict(note) for note in notes]
 
-    @staticmethod
-    def show_notes(notes):
-        for note in notes:
-            note.show()
+    def delete_notes(self, ids):
+        with self.table.batch_writer() as batch:
+            for id in ids:
+                batch.delete_item(Key={'id': id})
 
-    def text_search(self, field_searches, exact=False):
+        # TODO: remove old note index references
+
+    def get_notes_from_scan(self):
+        notes = self.table.scan()['Items']
+        return [Note.from_dict(note) for note in notes]
+
+    @staticmethod
+    def show_notes(notes, quiet=False):
+        for note in notes:
+            note.show(quiet=quiet)
+
+    def text_search(
+            self, field_searches, datetime_range=None, exact=False,
+            quiet=False):
         field_searches = {
             field: searches for field, searches in field_searches.items()
             if searches}
+
+        datetime_range = self._validate_range(datetime_range)
+        notes = self.get_matching_search_notes(field_searches)
+
+        if exact:
+            notes = self._exact_match_notes(notes, field_searches)
+
+        notes = [
+            note for note in notes
+            if datetime_range[0] < note.datetime < datetime_range[1]]
+
+        if not notes:
+            return
+        notes.sort(key=lambda note: note.timestamp)
+        self.show_notes(notes, quiet=quiet)
+
+    def _validate_range(self, datetime_range):
+        now = datetime.utcnow()
+        if not datetime_range:
+            return (datetime.fromtimestamp(0), now)
+        dates = [
+            dateparser.parse(date, settings={'TO_TIMEZONE': 'UTC'})
+            for date in datetime_range]
+        if None in dates:
+            raise ValueError('Unable to parse date range')
+
+        if len(dates) == 1:
+            end = dates[0]
+            start = now
+        elif len(dates) == 2:
+            end = max(dates)
+            start = min(dates)
+
+        return (start, end)
+
+    def get_matching_search_notes(self, field_searches):
+        if not field_searches:
+            return self.get_notes_from_scan()
+
         search_map = self._create_search_map(field_searches)
 
         note_id_sets = []
@@ -141,38 +210,35 @@ class NoteCollection(common.DynamoDBTable):
                 note_id_sets.append(note_ids)
 
         if not note_id_sets:
-            return
+            return []
 
         all_note_ids = set.intersection(*note_id_sets)
 
         if not all_note_ids:
-            return
+            return []
 
-        notes = self.get_notes_from_ids(all_note_ids)
+        return self.get_notes_from_ids(all_note_ids)
 
-        if exact:
-            notes = self._exact_match_notes(notes, field_searches)
-
-        if not notes:
-            return
-
-        notes.sort(key=lambda note: note.timestamp)
-        self.show_notes(notes)
-
-    @staticmethod
-    def _exact_match_notes(notes, field_searches):
+    def _exact_match_notes(self, notes, field_searches):
         exact_match_notes = []
         for note in notes:
-            for field, search in field_searches.items():
-                if search in getattr(note, field):
-                    exact_match_notes.append(note)
+            if self._all_in_note(field_searches, note):
+                exact_match_notes.append(note)
         return exact_match_notes
+
+    @staticmethod
+    def _all_in_note(field_searches, note):
+        for field, search_terms in field_searches.items():
+            for search_term in search_terms:
+                if search_term not in getattr(note, field):
+                    return False
+        return True
 
     def _create_search_map(self, fields):
         search_map = {}
         for field, search in fields.items():
 
-            tokens = Text(search).tokens
+            tokens = Text(' '.join(search)).tokens
             responses = self.index.query_token_ids(tokens)
 
             field_search_map = {}

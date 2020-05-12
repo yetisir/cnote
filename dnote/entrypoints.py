@@ -1,36 +1,39 @@
-import os
 import sys
-import tempfile
-import subprocess
+import termios
+import re
+
+import click
 
 from . import common, notes
 
 
 class NewNoteEntryPoint(common.EntryPoint):
     name = 'new'
-    aliases = ['n']
     description = 'Add a note to the dNote database'
 
     def run(self, options):
         collection = notes.NoteCollection()
         collection.init_tables()
-        body = launch_editor()
-        if body:
-            collection.add_note(
-                body, name=options.name, tags=options.tags)
+
+        body = options.body if options.body else launch_editor()
+
+        collection.add_note(
+            body, name=options.name, tags=options.tags)
 
     def build_parser(self, parser):
+        parser.add_argument('--body', '-b')
         parser.add_argument('--name', '-n')
         parser.add_argument('--tags', '-t', nargs='+')
-        parser.add_argument('--file', '-f')
 
 
 class FindNotesEntryPoint(common.EntryPoint):
     name = 'find'
-    aliases = ['f']
     description = 'Search for notes in the dNote database'
 
     def run(self, options):
+        if options.range and len(options.range) > 2:
+            raise ValueError('Number of range arguments exceeds 2')
+
         collection = notes.NoteCollection()
         collection.init_tables()
         search_fields = {
@@ -42,60 +45,83 @@ class FindNotesEntryPoint(common.EntryPoint):
 
         # collection.date_search(options.range)
         collection.text_search(
-            search_fields, exact=options.exact)
+            search_fields, exact=options.exact, quiet=options.quiet,
+            datetime_range=options.range)
 
     def build_parser(self, parser):
         parser.add_argument('--id', '-i')
-        parser.add_argument('--name', '-n')
-        parser.add_argument('--body', '-b')
-        parser.add_argument('--tags', '-t')
-        parser.add_argument('--host', '-o')
-        parser.add_argument('--range', '-r')
+        parser.add_argument('--range', '-r', nargs='+')
+        parser.add_argument('--name', '-n', nargs='+')
+        parser.add_argument('--body', '-b', nargs='+')
+        parser.add_argument('--tags', '-t', nargs='+')
+        parser.add_argument('--host', '-o', nargs='+')
         parser.add_argument('--exact', '-e', action='store_true')
+        parser.add_argument('--quiet', '-q', action='store_true')
 
 
 class RemoveNoteEntryPoint(common.EntryPoint):
-    name = 'remove'
-    aliases = ['r', 'rm']
-    description = 'Removes a note from the dNote database'
+    name = 'rm'
+    description = 'Removes notes from the dNote database'
 
     def run(self, options):
-        pass
+        ids = get_input_ids(options.ids)
+        collection = notes.NoteCollection()
+        collection.init_tables()
+        collection.delete_notes(ids)
 
     def build_parser(self, parser):
-        parser.add_argument('--id', '-i', nargs='+', required=True)
+        parser.add_argument('--ids', '-i', nargs='+')
 
 
 class EditNoteEntryPoint(common.EntryPoint):
     name = 'edit'
-    aliases = ['e']
     description = 'Updates a note from the dNote database'
 
     def run(self, options):
-        pass
+        ids = get_input_ids(options.ids)
+        if len(ids) > 1:
+            raise ValueError('More than one id specified')
+
+        id = ids[0]
+
+        collection = notes.NoteCollection()
+        collection.init_tables()
+
+        note = collection.get_note_by_id(id)
+        if not note:
+            return
+
+        body = options.body if options.body else launch_editor(note.body)
+
+        collection.add_note(
+            body, name=options.name, tags=options.tags)
 
     def build_parser(self, parser):
         parser.add_argument('--id', '-i', required=True)
+        parser.add_argument('--body', '-b')
         parser.add_argument('--name', '-n')
         parser.add_argument('--tags', '-t', nargs='+')
-        parser.add_argument('--open', '-o', action='store_true')
 
 
 class ShowNoteEntryPoint(common.EntryPoint):
     name = 'show'
-    aliases = ['s']
     description = 'Displays a full note from the dNote database'
 
     def run(self, options):
-        pass
+        collection = notes.NoteCollection()
+        collection.init_tables()
+
+        ids = get_input_ids(options.ids)
+        for note in collection.get_notes_from_ids(ids):
+            note.show(max_lines=options.max)
 
     def build_parser(self, parser):
-        parser.add_argument('--id', '-i', required=True)
+        parser.add_argument('--ids', '-i', nargs='+')
+        parser.add_argument('--max', '-m', type=int)
 
 
 class ConfigEntryPoint(common.EntryPoint):
     name = 'config'
-    aliases = ['c', 'conf']
     description = 'Config settings for dNote'
 
     def run(self, options):
@@ -114,18 +140,35 @@ def initialize():
     return entry_points
 
 
-def launch_editor():
-    editor = os.environ.get('EDITOR', 'vim')
-    args = [editor]
-    note = sys.stdin.read() if not sys.stdin.isatty() else ''
+def launch_editor(text=None):
 
-    if editor == 'vim':
-        args.append('+startinsert')
+    stty_attrs = termios.tcgetattr(sys.stdout)
 
-    with tempfile.NamedTemporaryFile() as temp_file:
-        temp_file.write(note.encode())
-        temp_file.flush()
-        args.append(temp_file.name)
-        subprocess.call(args)
-        temp_file.seek(0)
-        return temp_file.read().decode()
+    if text:
+        note = text
+    elif not sys.stdin.isatty():
+        note = sys.stdin.read()
+    else:
+        note = ''
+    note = click.edit(note, require_save=False)
+
+    termios.tcsetattr(sys.stdout, termios.TCSAFLUSH, stty_attrs)
+    return note
+
+
+def get_input_ids(ids):
+    piped_input = sys.stdin.read() if not sys.stdin.isatty() else ''
+    ids = ids if ids else []
+
+    regex = r'([a-fA-F\d]{32})'
+
+    ids = [id for id in ids if re.match(regex, id)]
+    for line in piped_input.split('\n'):
+        if line.startswith('\t'):
+            continue
+
+        match = re.match(regex, line)
+        if match:
+            ids.append(match.group())
+
+    return ids

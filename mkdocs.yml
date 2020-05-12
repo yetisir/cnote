@@ -1,3 +1,20 @@
 site_name: dNote - Cloud Based Note Management
+repo_url: https://github.com/yetisir/dnote
+site_author: M. Yetisir
+site_description: dNote Documentation
+
 nav:
   - Home: index.md
+
+theme:
+  name: readthedocs
+  highlightjs: true
+  hljs_languages:
+    - yaml
+    - python
+    - bash
+
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/yetisir/dnote'  
