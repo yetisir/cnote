@@ -2,7 +2,8 @@ from . import aws, common
 
 
 class NoteIndex(common.DynamoDBTable):
-    table_name = 'dnote_index'  # TODO: move to config
+    #table_name = settings.DYNAMODB_NOTETABLE
+    table_name = 'dnote_index'
 
     def __init__(self):
         super().__init__(self)
@@ -34,6 +35,9 @@ class NoteIndex(common.DynamoDBTable):
         )
 
     def query_token_ids(self, token_ids):
+        if not token_ids:
+            return []
+
         return aws.dynamodb.batch_get_item(
             RequestItems={
                 self.table_name: {

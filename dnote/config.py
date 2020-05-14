@@ -1,6 +1,17 @@
 import configurator
 import nltk
+from dynaconf import settings, Validator
 
+
+settings.validators.register(
+    Validator(
+        'DYNAMODB_ENPOINT',
+        'DYNAMODB_NOTETABLE',
+        'DYNAMODB_INDEXTABLE',
+        'AWS_REGION',
+        'AWS_ACCESS_KEY_ID',
+        'AWS_SECRET_ACCESS_KEY',
+))
 # TODO: streamline config settings
 
 
