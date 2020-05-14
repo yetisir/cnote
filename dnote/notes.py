@@ -4,10 +4,9 @@ import getpass
 from datetime import datetime
 
 import nltk
-from dynaconf import settings
 
 from . import aws, index, common, utils
-
+from .config import settings
 
 class Text:
     def __init__(self, raw):
@@ -99,8 +98,7 @@ class Note:
 
 
 class NoteCollection(common.DynamoDBTable):
-    # table_name = settings.DYNAMODB_NOTETABLE
-    table_name = 'dnote'
+    table_name = settings.dynamodb_note_table
 
     def __init__(self, create_tables=True):
         super().__init__()

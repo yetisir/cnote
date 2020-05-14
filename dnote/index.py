@@ -1,9 +1,9 @@
 from . import aws, common
+from .config import settings
 
 
 class NoteIndex(common.DynamoDBTable):
-    #table_name = settings.DYNAMODB_NOTETABLE
-    table_name = 'dnote_index'
+    table_name = settings.dynamodb_index_table
 
     def __init__(self):
         super().__init__(self)
