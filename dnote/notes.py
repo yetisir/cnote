@@ -111,7 +111,9 @@ class NoteCollection(common.DynamoDBTable):
     def add_note(self, body=None, name=None, tags=None):
 
         note = Note(body, name=name, tags=tags)
-        print(self.table.put_item(Item=note.to_dict()))
+        if not note.body:
+            return
+        self.table.put_item(Item=note.to_dict())
         self.index.add_note(note)
         note.show()
 

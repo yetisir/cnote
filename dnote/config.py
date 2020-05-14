@@ -5,7 +5,7 @@ import nltk
 def get_settings(config_dir='~/.dnote.yml'):
     default_config = configurator.Config({
         'aws_endpoint': None,
-        # 'dynamodb_endpoint': 'http://localhost:8000',
+        # 'aws_endpoint': 'http://localhost:8000',
         'aws_region': 'us-west-2',
         'dynamodb_note_table': 'dnote',
         'dynamodb_index_table': 'dnote_index',

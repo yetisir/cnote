@@ -37,6 +37,6 @@ docker run -p 8000:8000 amazon/dynamodb-local
 By default, dNote tries to connect to AWS servers, but you can specify the location of your local instance in ~/.dnote.yml
 
 ```yaml
-dynamodb_endpoint: 'http://localhost:8000'
+aws_endpoint: 'http://localhost:8000'
 ```
  
