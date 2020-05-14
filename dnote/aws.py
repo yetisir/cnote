@@ -12,5 +12,5 @@ try:
 except exceptions.NoRegionError:
     dynamodb = boto3.resource(
         'dynamodb',
-        endpoint_url=settings.dynamodb_endpoint,
+        endpoint_url=settings.aws_endpoint,
         region_name=settings.aws_region)
