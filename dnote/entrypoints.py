@@ -1,9 +1,3 @@
-import sys
-import termios
-import re
-
-import click
-
 from . import common, notes
 
 
@@ -12,13 +6,11 @@ class NewNoteEntryPoint(common.EntryPoint):
     description = 'Add a note to the dNote database'
 
     def run(self, options):
+        body = self._validate_body(options.body)
+
         collection = notes.NoteCollection()
-        collection.init_tables()
-
-        body = options.body if options.body else launch_editor()
-
         collection.add_note(
-            body, name=options.name, tags=options.tags)
+            body=body, name=options.name, tags=options.tags)
 
     def build_parser(self, parser):
         parser.add_argument('--body', '-b')
@@ -31,25 +23,20 @@ class FindNotesEntryPoint(common.EntryPoint):
     description = 'Search for notes in the dNote database'
 
     def run(self, options):
-        if options.range and len(options.range) > 2:
-            raise ValueError('Number of range arguments exceeds 2')
-
-        collection = notes.NoteCollection()
-        collection.init_tables()
-        search_fields = {
+        datetime_range = self._validate_range(options.range)
+        search_fields = self._validate_search_fields({
             'name': options.name,
             'body': options.body,
             'tags': options.tags,
             'host': options.host,
-        }
+        })
 
-        # collection.date_search(options.range)
-        collection.text_search(
-            search_fields, exact=options.exact, quiet=options.quiet,
-            datetime_range=options.range)
+        collection = notes.NoteCollection()
+        collection.search_notes(
+            search_fields=search_fields, datetime_range=datetime_range,
+            exact=options.exact, quiet=options.quiet)
 
     def build_parser(self, parser):
-        parser.add_argument('--id', '-i')
         parser.add_argument('--range', '-r', nargs='+')
         parser.add_argument('--name', '-n', nargs='+')
         parser.add_argument('--body', '-b', nargs='+')
@@ -64,9 +51,9 @@ class RemoveNoteEntryPoint(common.EntryPoint):
     description = 'Removes notes from the dNote database'
 
     def run(self, options):
-        ids = get_input_ids(options.ids)
+        ids = self._validate_ids(options.ids)
+
         collection = notes.NoteCollection()
-        collection.init_tables()
         collection.delete_notes(ids)
 
     def build_parser(self, parser):
@@ -78,26 +65,23 @@ class EditNoteEntryPoint(common.EntryPoint):
     description = 'Updates a note from the dNote database'
 
     def run(self, options):
-        ids = get_input_ids(options.ids)
+        ids = self._validate_ids(options.id)
         if len(ids) > 1:
-            raise ValueError('More than one id specified')
-
-        id = ids[0]
-
-        collection = notes.NoteCollection()
-        collection.init_tables()
-
-        note = collection.get_note_by_id(id)
-        if not note:
+            raise ValueError('More than one id specified ...')
+        if not len(ids):
             return
 
-        body = options.body if options.body else launch_editor(note.body)
+        collection = notes.NoteCollection()
+        note = collection.get_notes(ids)[0]
+        if not note:
+            raise ValueError('Specified note does not exist ...')
 
-        collection.add_note(
-            body, name=options.name, tags=options.tags)
+        body = self._validate_body(options.body, prompt=note.body)
+        collection.update_note(
+            note=note, body=body, name=options.name, tags=options.tags)
 
     def build_parser(self, parser):
-        parser.add_argument('--id', '-i', required=True)
+        parser.add_argument('--id', '-i')
         parser.add_argument('--body', '-b')
         parser.add_argument('--name', '-n')
         parser.add_argument('--tags', '-t', nargs='+')
@@ -108,16 +92,24 @@ class ShowNoteEntryPoint(common.EntryPoint):
     description = 'Displays a full note from the dNote database'
 
     def run(self, options):
+        ids = self._validate_ids(options.ids)
         collection = notes.NoteCollection()
-        collection.init_tables()
-
-        ids = get_input_ids(options.ids)
-        for note in collection.get_notes_from_ids(ids):
-            note.show(max_lines=options.max)
+        collection.show_notes(ids=ids)
 
     def build_parser(self, parser):
         parser.add_argument('--ids', '-i', nargs='+')
         parser.add_argument('--max', '-m', type=int)
+
+
+class UndoEntryPoint(common.EntryPoint):
+    name = 'undo'
+    description = 'Undoes the previous dNote edit or new command'
+
+    def run(self, options):
+        raise NotImplementedError
+
+    def build_parser(self, parser):
+        pass
 
 
 class ConfigEntryPoint(common.EntryPoint):
@@ -125,7 +117,7 @@ class ConfigEntryPoint(common.EntryPoint):
     description = 'Config settings for dNote'
 
     def run(self, options):
-        pass
+        raise NotImplementedError
 
     def build_parser(self, parser):
         pass
@@ -138,37 +130,3 @@ def initialize():
         for alias in cls.aliases:
             entry_points[alias] = cls()
     return entry_points
-
-
-def launch_editor(text=None):
-
-    stty_attrs = termios.tcgetattr(sys.stdout)
-
-    if text:
-        note = text
-    elif not sys.stdin.isatty():
-        note = sys.stdin.read()
-    else:
-        note = ''
-    note = click.edit(note, require_save=False)
-
-    termios.tcsetattr(sys.stdout, termios.TCSAFLUSH, stty_attrs)
-    return note
-
-
-def get_input_ids(ids):
-    piped_input = sys.stdin.read() if not sys.stdin.isatty() else ''
-    ids = ids if ids else []
-
-    regex = r'([a-fA-F\d]{32})'
-
-    ids = [id for id in ids if re.match(regex, id)]
-    for line in piped_input.split('\n'):
-        if line.startswith('\t'):
-            continue
-
-        match = re.match(regex, line)
-        if match:
-            ids.append(match.group())
-
-    return ids

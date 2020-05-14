@@ -4,9 +4,9 @@ import getpass
 from datetime import datetime
 
 import nltk
-import dateparser
 
 from . import aws, index, common, utils
+from .config import settings
 
 
 class Text:
@@ -47,7 +47,7 @@ class Note:
 
     @property
     def datetime(self):
-        return datetime.fromtimestamp(self.timestamp)
+        return datetime.utcfromtimestamp(self.timestamp)
 
     @property
     def tokens(self):
@@ -99,156 +99,120 @@ class Note:
 
 
 class NoteCollection(common.DynamoDBTable):
-    table_name = 'dnote'  # TODO: get from config
+    table_name = settings.dynamodb_note_table
 
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, create_tables=True):
+        super().__init__()
         self.index = index.NoteIndex()
 
-    def init_tables(self):
+        if create_tables:
+            self._initialize_tables()
+
+    def add_note(self, body=None, name=None, tags=None):
+
+        note = Note(body, name=name, tags=tags)
+        print(self.table.put_item(Item=note.to_dict()))
+        self.index.add_note(note)
+        note.show()
+
+    def update_note(self, note, body=None, name=None, tags=None):
+
+        body = body if body else note.body
+        name = name if name else note.name
+        tags = tags if tags else note.tags
+        self.add_note(body=body, name=name, tags=tags)
+        self.delete_notes([note.id])
+
+    def delete_notes(self, ids):
+        with self.table.batch_writer() as batch:
+            for id in ids:
+                batch.delete_item(Key={'id': id})
+        # TODO: remove old note index references
+        # self.index.delete_note(id)
+
+    def show_notes(self, notes=None, ids=None, max_lines=10, quiet=False):
+        if notes is None:
+            notes = []
+        if ids is not None:
+            notes.extend(self.get_notes(ids))
+        for note in notes:
+            note.show(max_lines=max_lines, quiet=quiet)
+
+    def search_notes(
+            self, search_fields, datetime_range=None, exact=False,
+            quiet=False):
+        # search the index for the terms provided
+        notes = self._token_search(search_fields)
+
+        # refine to exact matches if requested
+        if exact:
+            notes = self._exact_search(search_fields, notes=notes)
+
+        # refine to datetime range if specified
+        notes = [
+            note for note in notes
+            if datetime_range[0] < note.datetime < datetime_range[1]]
+
+        # sort notes by timestamp
+        notes.sort(key=lambda note: note.timestamp)
+
+        # display matching notes
+        self.show_notes(notes=notes, quiet=quiet)
+
+    def get_notes(self, ids=None, datetime_range=(None, None)):
+        if ids is None:
+            notes = self.table.scan()['Items']
+        elif not len(ids):
+            notes = []
+        else:
+            notes = aws.dynamodb.batch_get_item(
+                RequestItems={
+                    self.table.name: {
+                        'Keys': [{'id': note_id} for note_id in ids],
+                    },
+                },
+            )['Responses'][self.table_name]
+
+        return [Note.from_dict(note) for note in notes]
+
+    def _initialize_tables(self):
         if not self.exists:
             self.create_table()
 
         if not self.index.exists:
             self.index.create_table()
 
-    def add_note(self, body, name=None, tags=None):
-        note = Note(body, name=name, tags=tags)
-        if not note.body:
-            return
-        self.table.put_item(Item=note.to_dict())
-        self.index.add_note(note)
-        note.show()
-
-    def update_note(self, id, note):
-        self.table.put_item(Item=note.to_dict())
-        self.index.add_note(note)  # TODO: remove old note index references
-        note.show()
-
-    def get_note_from_id(self, id):
-        response = self.table.get_item(Key={'id': id})
-        return Note.from_dict(response)
-
-    def get_notes_from_ids(self, ids, datetime_range=(None, None)):
-        notes = aws.dynamodb.batch_get_item(
-            RequestItems={
-                self.table.name: {
-                    'Keys': [{'id': note_id} for note_id in ids],
-                },
-            },
-        )['Responses'][self.table_name]
-
-        return [Note.from_dict(note) for note in notes]
-
-    def delete_notes(self, ids):
-        with self.table.batch_writer() as batch:
-            for id in ids:
-                batch.delete_item(Key={'id': id})
-
-        # TODO: remove old note index references
-
-    def get_notes_from_scan(self):
-        notes = self.table.scan()['Items']
-        return [Note.from_dict(note) for note in notes]
-
-    @staticmethod
-    def show_notes(notes, quiet=False):
-        for note in notes:
-            note.show(quiet=quiet)
-
-    def text_search(
-            self, field_searches, datetime_range=None, exact=False,
-            quiet=False):
-        field_searches = {
-            field: searches for field, searches in field_searches.items()
-            if searches}
-
-        datetime_range = self._validate_range(datetime_range)
-        notes = self.get_matching_search_notes(field_searches)
-
-        if exact:
-            notes = self._exact_match_notes(notes, field_searches)
-
-        notes = [
-            note for note in notes
-            if datetime_range[0] < note.datetime < datetime_range[1]]
-
-        if not notes:
-            return
-        notes.sort(key=lambda note: note.timestamp)
-        self.show_notes(notes, quiet=quiet)
-
-    def _validate_range(self, datetime_range):
-        now = datetime.utcnow()
-        if not datetime_range:
-            return (datetime.fromtimestamp(0), now)
-        dates = [
-            dateparser.parse(date, settings={'TO_TIMEZONE': 'UTC'})
-            for date in datetime_range]
-        if None in dates:
-            raise ValueError('Unable to parse date range')
-
-        if len(dates) == 1:
-            end = dates[0]
-            start = now
-        elif len(dates) == 2:
-            end = max(dates)
-            start = min(dates)
-
-        return (start, end)
-
-    def get_matching_search_notes(self, field_searches):
-        if not field_searches:
-            return self.get_notes_from_scan()
-
-        search_map = self._create_search_map(field_searches)
-
-        note_id_sets = []
-
-        for field_search_map in search_map.values():
-            for note_ids in field_search_map.values():
-                note_id_sets.append(note_ids)
-
-        if not note_id_sets:
-            return []
-
-        all_note_ids = set.intersection(*note_id_sets)
-
-        if not all_note_ids:
-            return []
-
-        return self.get_notes_from_ids(all_note_ids)
-
-    def _exact_match_notes(self, notes, field_searches):
+    def _exact_search(self, search_fields, notes=None):
+        if notes is None:
+            notes = self._token_search(search_fields)
         exact_match_notes = []
         for note in notes:
-            if self._all_in_note(field_searches, note):
+            if self._search_fields_in_note(search_fields, note):
                 exact_match_notes.append(note)
         return exact_match_notes
 
     @staticmethod
-    def _all_in_note(field_searches, note):
+    def _search_fields_in_note(field_searches, note):
         for field, search_terms in field_searches.items():
             for search_term in search_terms:
                 if search_term not in getattr(note, field):
                     return False
         return True
 
-    def _create_search_map(self, fields):
-        search_map = {}
-        for field, search in fields.items():
+    def _token_search(self, search_fields):
+        token_notes = []
+        for field, search in search_fields.items():
 
             tokens = Text(' '.join(search)).tokens
             responses = self.index.query_token_ids(tokens)
 
-            field_search_map = {}
             for response in responses:
                 token_note_ids = response.get(
                     index.NoteIndex.get_field_name(field))
-                if not token_note_ids:
-                    continue
-                field_search_map[tokens[response['id']]] = set(token_note_ids)
+                if token_note_ids:
+                    token_notes.append(set(token_note_ids))
 
-            search_map[field] = field_search_map
+        note_ids = (
+            None if not token_notes else list(set.intersection(*token_notes)))
 
-        return search_map
+        return self.get_notes(ids=note_ids)
