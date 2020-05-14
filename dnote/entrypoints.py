@@ -117,7 +117,7 @@ class ConfigEntryPoint(common.EntryPoint):
     description = 'Config settings for dNote'
 
     def run(self, options):
-        pass
+        raise NotImplementedError
 
     def build_parser(self, parser):
         pass
