@@ -6,10 +6,9 @@ site_description: dNote Documentation
 nav:
   - Home: index.md
   - Installation: installation.md
-  - Quickstart: quickstart.md
   - Configuration: configuration.md
   - Usage: usage.md
-
+  - Implementation: implementation.md
 
 theme:
   name: readthedocs
