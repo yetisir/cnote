@@ -1,14 +1,14 @@
 import configurator
 import nltk
 
-# TODO: streamline config settings
 
-
-def get_config(config_dir='~/.dnote.yml'):
+def get_settings(config_dir='~/.dnote.yml'):
     default_config = configurator.Config({
-        'dynamodb_endpoint': None,
-        # 'dynamodb_endpoint': 'http://localhost:8000',
-        'dynamodb_region': 'us-west-2',
+        'aws_endpoint': None,
+        # 'aws_endpoint': 'http://localhost:8000',
+        'aws_region': 'us-west-2',
+        'dynamodb_note_table': 'dnote',
+        'dynamodb_index_table': 'dnote_index',
     })
 
     user_config = configurator.Config.from_path(config_dir, optional=True)
@@ -17,4 +17,4 @@ def get_config(config_dir='~/.dnote.yml'):
 
 
 nltk.download('punkt', quiet=True)
-config = get_config()
+settings = get_settings()
