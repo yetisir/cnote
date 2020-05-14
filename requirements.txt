@@ -36,7 +36,7 @@ packaging==20.3           # via pytest
 pip-tools==5.1.2          # via dnote
 pluggy==0.13.1            # via pytest
 py==1.8.1                 # via pytest
-pycodestyle==2.5.0        # via flake8
+pycodestyle==2.6.0        # via flake8
 pyflakes==2.1.1           # via flake8
 pyparsing==2.4.7          # via packaging
 pytest-cov==2.8.1         # via dnote
