@@ -1,0 +1,5 @@
+# dNote Search Engine Implementation
+
+dNote indexes all notes as they are written. The index is written to a separate table and used to lookup the specified search terms. To limit the number of index entries and maximize the likelihood of a search returning the intended result, a stemming algorithm from [NLTK](https://www.nltk.org/) is used to group similar words into the same search token (e.g. 'run', 'runs', 'runner', and 'running' would all return the same search results). This stemming approach makes the search experience more natural than standard pattern matching approaches, albeit somewhat more limited. That being said, the `--exact` (or `-e`) flag will ignore the stem token matches and yield only exact matches. 
+
+With respect to more advanced queries, the decision to use a remote text index limits us from more sophisticated pattern matching like regex since those approaches require iteration through the contents of each note. This can be accomplished in a future release however, by integrating AWS Elasticsearch or using local caching.
