@@ -5,18 +5,24 @@ import getpass
 import pytest
 from botocore import stub
 
-from dnote import aws, utils
+from dnote import aws, notes, utils
 
 TEST_TIMESTAMP = datetime(2020, 12, 25, 17, 5, 55, tzinfo=timezone.utc)
 TEST_HOST = 'host'
 TEST_USER = 'user'
 
 
-@pytest.fixture(autouse=True)
-def dynamodb_stub():
+@pytest.fixture
+def note_collection():
     with stub.Stubber(aws.dynamodb.meta.client) as stubber:
-        yield stubber
-#        stubber.assert_no_pending_responses()
+        stubber.add_response(
+            'list_tables', {'TableNames': ['dnote', 'dnote_index']})
+        stubber.add_response(
+            'list_tables', {'TableNames': ['dnote', 'dnote_index']})
+        collection = notes.NoteCollection()
+        collection.stubber = stubber
+        yield collection
+        stubber.assert_no_pending_responses()
 
 
 @pytest.fixture

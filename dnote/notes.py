@@ -8,6 +8,7 @@ import nltk
 from . import aws, index, common, utils
 from .config import settings
 
+
 class Text:
     def __init__(self, raw):
         self.raw = raw.strip()
@@ -110,7 +111,7 @@ class NoteCollection(common.DynamoDBTable):
     def add_note(self, body=None, name=None, tags=None):
 
         note = Note(body, name=name, tags=tags)
-        self.table.put_item(Item=note.to_dict())
+        print(self.table.put_item(Item=note.to_dict()))
         self.index.add_note(note)
         note.show()
 
