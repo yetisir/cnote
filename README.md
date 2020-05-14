@@ -6,7 +6,7 @@ dNote is a simple Python based CLI utility for managing notes across systems in 
 
 ## Installation
 
-The latest stable release of dNote can be installed with [pip](https://pip.pypa.io/en/stable/) (recommended).
+The latest stable release of dNote can be installed with [pip](https://pip.pypa.io/en/stable/).
  
 ```bash
 python -m pip install dnote
