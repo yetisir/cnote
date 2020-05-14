@@ -40,7 +40,7 @@ pycodestyle==2.6.0        # via flake8
 pyflakes==2.1.1           # via flake8
 pyparsing==2.4.7          # via packaging
 pytest-cov==2.8.1         # via dnote
-pytest-flake8==1.0.5      # via dnote
+pytest-flake8==1.0.6      # via dnote
 pytest==5.4.2             # via dnote, pytest-cov, pytest-flake8
 python-dateutil==2.8.1    # via botocore, dateparser
 pytz==2020.1              # via dateparser, tzlocal
