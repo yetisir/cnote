@@ -1,5 +1,5 @@
 # dNote - Cloud Based Note Management
-[![Logo]](docs/asset/logo.png) [![Build Status](https://travis-ci.com/yetisir/dnote.svg?branch=master)](https://travis-ci.co/yetisir/dnote) [![Coverage Status](https://coveralls.io/repos/github/yetisir/dnote/badge.svg?branch=master)](https://coveralls.io/github/yetisir/dnote?branch=master) [![Maintainability](https://api.codeclimate.com/v1/badges/9188bb54d74247ab039e/maintainability)](https://codeclimate.com/github/yetisir/dnote/maintainability) [![Documentation Status](https://readthedocs.org/projects/dnote/badge/?version=latest)](https://dnote.readthedocs.io/en/latest/?badge=latest)
+[![Logo](docs/asset/logo.png) [![Build Status](https://travis-ci.com/yetisir/dnote.svg?branch=master)](https://travis-ci.co/yetisir/dnote) [![Coverage Status](https://coveralls.io/repos/github/yetisir/dnote/badge.svg?branch=master)](https://coveralls.io/github/yetisir/dnote?branch=master) [![Maintainability](https://api.codeclimate.com/v1/badges/9188bb54d74247ab039e/maintainability)](https://codeclimate.com/github/yetisir/dnote/maintainability) [![Documentation Status](https://readthedocs.org/projects/dnote/badge/?version=latest)](https://dnote.readthedocs.io/en/latest/?badge=latest)
   
 dNote is a simple Python based CLI utility for managing notes across systems in real-time using AWS (free-tier) cloud infrastructure. 
 
