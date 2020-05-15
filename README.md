@@ -1,4 +1,4 @@
-<img align="left" height="100" src="docs/assets/logo.png">
+<img align="left" height="120" src="docs/assets/logo.png">
 
 # dNote - Cloud Based Note Management
 
