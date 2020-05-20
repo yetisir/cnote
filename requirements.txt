@@ -5,7 +5,7 @@
 #    pip-compile
 #
 attrs==19.3.0             # via pytest
-botocore==1.16.11          # via boto3, s3transfer
+botocore==1.16.13          # via boto3, s3transfer
 boto3==1.13.9             # via dnote
 certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
