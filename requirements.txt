@@ -32,7 +32,7 @@ mccabe==0.6.1             # via flake8
 mkdocs==1.1.2               # via dnote
 more-itertools==8.3.0     # via pytest
 nltk==3.5                 # via dnote, lunr
-packaging==20.3           # via pytest
+packaging==20.4           # via pytest
 pip-tools==5.1.2          # via dnote
 pluggy==0.13.1            # via pytest
 py==1.8.1                 # via pytest
