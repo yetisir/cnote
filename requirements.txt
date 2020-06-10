@@ -10,7 +10,7 @@ boto3==1.13.13             # via dnote
 certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
 click==7.1.2              # via dnote, mkdocs, nltk, pip-tools
-configurator[yaml]==2.0.0  # via dnote
+configurator[yaml]==2.5.1  # via dnote
 coverage==5.1             # via coveralls, pytest-cov
 coveralls==2.0.0          # via dnote
 dateparser==0.7.4         # via dnote
