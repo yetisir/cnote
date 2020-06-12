@@ -5,52 +5,52 @@
 #    pip-compile
 #
 attrs==19.3.0             # via pytest
-botocore==1.16.9          # via boto3, s3transfer
-boto3==1.13.9             # via dnote
+botocore==1.17.0          # via boto3, s3transfer
+boto3==1.14.0             # via dnote
 certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
 click==7.1.2              # via dnote, mkdocs, nltk, pip-tools
-configurator[yaml]==2.0.0  # via dnote
+configurator[yaml]==2.5.1  # via dnote
 coverage==5.1             # via coveralls, pytest-cov
 coveralls==2.0.0          # via dnote
 dateparser==0.7.4         # via dnote
 docopt==0.6.2             # via coveralls
 docutils==0.15.2          # via botocore
 entrypoints==0.3          # via flake8
-flake8==3.8.1             # via pytest-flake8
+flake8==3.8.3             # via pytest-flake8
 future==0.18.2            # via lunr
 idna==2.9                 # via requests
 importlib-metadata==1.6.0  # via markdown, pluggy, pytest
 jinja2==2.11.2            # via mkdocs
 jmespath==0.10.0           # via boto3, botocore
-joblib==0.14.1            # via nltk
+joblib==0.15.1            # via nltk
 livereload==2.6.1         # via mkdocs
 lunr[languages]==0.5.8    # via mkdocs
 markdown==3.2.2           # via mkdocs
 markupsafe==1.1.1         # via jinja2
 mccabe==0.6.1             # via flake8
-mkdocs==1.1.1               # via dnote
-more-itertools==8.2.0     # via pytest
+mkdocs==1.1.2               # via dnote
+more-itertools==8.3.0     # via pytest
 nltk==3.5                 # via dnote, lunr
-packaging==20.3           # via pytest
-pip-tools==5.1.2          # via dnote
+packaging==20.4           # via pytest
+pip-tools==5.2.1          # via dnote
 pluggy==0.13.1            # via pytest
 py==1.8.1                 # via pytest
 pycodestyle==2.6.0        # via flake8
 pyflakes==2.2.0           # via flake8
 pyparsing==2.4.7          # via packaging
-pytest-cov==2.8.1         # via dnote
+pytest-cov==2.9.0         # via dnote
 pytest-flake8==1.0.6      # via dnote
-pytest==5.4.2             # via dnote, pytest-cov, pytest-flake8
+pytest==5.4.3             # via dnote, pytest-cov, pytest-flake8
 python-dateutil==2.8.1    # via botocore, dateparser
 pytz==2020.1              # via dateparser, tzlocal
 pyyaml==5.3.1             # via configurator, mkdocs
-regex==2020.5.7           # via dateparser, nltk
+regex==2020.5.14           # via dateparser, nltk
 requests==2.23.0          # via coveralls
 s3transfer==0.3.3         # via boto3
-six==1.14.0               # via livereload, lunr, packaging, pip-tools, python-dateutil
+six==1.15.0               # via livereload, lunr, packaging, pip-tools, python-dateutil
 tornado==6.0.4            # via livereload, mkdocs
-tqdm==4.46.0              # via nltk
+tqdm==4.46.1              # via nltk
 tzlocal==2.1              # via dateparser
 urllib3==1.25.9           # via botocore, requests
 wcwidth==0.1.9            # via pytest
