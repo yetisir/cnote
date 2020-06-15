@@ -13,7 +13,7 @@ click==7.1.2              # via dnote, mkdocs, nltk, pip-tools
 configurator[yaml]==2.5.1  # via dnote
 coverage==5.1             # via coveralls, pytest-cov
 coveralls==2.0.0          # via dnote
-dateparser==0.7.4         # via dnote
+dateparser==0.7.6         # via dnote
 docopt==0.6.2             # via coveralls
 docutils==0.15.2          # via botocore
 entrypoints==0.3          # via flake8
