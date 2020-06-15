@@ -45,7 +45,7 @@ pytest==5.4.3             # via dnote, pytest-cov, pytest-flake8
 python-dateutil==2.8.1    # via botocore, dateparser
 pytz==2020.1              # via dateparser, tzlocal
 pyyaml==5.3.1             # via configurator, mkdocs
-regex==2020.5.14           # via dateparser, nltk
+regex==2020.6.8           # via dateparser, nltk
 requests==2.23.0          # via coveralls
 s3transfer==0.3.3         # via boto3
 six==1.15.0               # via livereload, lunr, packaging, pip-tools, python-dateutil
