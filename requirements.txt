@@ -20,7 +20,7 @@ entrypoints==0.3          # via flake8
 flake8==3.8.3             # via pytest-flake8
 future==0.18.2            # via lunr
 idna==2.9                 # via requests
-importlib-metadata==1.6.1  # via markdown, pluggy, pytest
+importlib-metadata==1.7.0  # via markdown, pluggy, pytest
 jinja2==2.11.2            # via mkdocs
 jmespath==0.10.0           # via boto3, botocore
 joblib==0.15.1            # via nltk
