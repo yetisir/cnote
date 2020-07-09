@@ -19,7 +19,7 @@ docutils==0.15.2          # via botocore
 entrypoints==0.3          # via flake8
 flake8==3.8.3             # via pytest-flake8
 future==0.18.2            # via lunr
-idna==2.9                 # via requests
+idna==2.10                 # via requests
 importlib-metadata==1.7.0  # via markdown, pluggy, pytest
 jinja2==2.11.2            # via mkdocs
 jmespath==0.10.0           # via boto3, botocore
