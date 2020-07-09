@@ -53,7 +53,7 @@ tornado==6.0.4            # via livereload, mkdocs
 tqdm==4.46.1              # via nltk
 tzlocal==2.1              # via dateparser
 urllib3==1.25.9           # via botocore, requests
-wcwidth==0.2.4            # via pytest
+wcwidth==0.2.5            # via pytest
 zipp==3.1.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
