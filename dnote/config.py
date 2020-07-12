@@ -2,7 +2,15 @@ import configurator
 import nltk
 
 
-def get_settings(config_dir='~/.dnote.yml'):
+def get_settings(config_file='~/.dnote.yml'):
+    """Get settings from config file
+
+    Args:
+        config_file (str, optional): [description]. Defaults to '~/.dnote.yml'.
+
+    Returns:
+        [type]: [description]
+    """
     default_config = configurator.Config({
         'aws_endpoint': None,
         # 'aws_endpoint': 'http://localhost:8000',
@@ -11,7 +19,7 @@ def get_settings(config_dir='~/.dnote.yml'):
         'dynamodb_index_table': 'dnote_index',
     })
 
-    user_config = configurator.Config.from_path(config_dir, optional=True)
+    user_config = configurator.Config.from_path(config_file, optional=True)
 
     return default_config + user_config
 

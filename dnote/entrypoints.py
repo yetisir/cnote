@@ -124,6 +124,9 @@ class ConfigEntryPoint(common.EntryPoint):
 
 
 def initialize():
+    """Initializes the entrypoints. Automatically instantiates all subclasses
+    of common.Entrypoint"""
+
     entry_points = {}
     for cls in common.EntryPoint.__subclasses__():
         entry_points[cls.name] = cls()

@@ -9,6 +9,10 @@ from . import aws
 
 
 class EntryPoint(ABC):
+    """Base class for CLI Entrypoints. This is an interface to
+    help describe the commands and corresponding actions
+    """
+
     aliases = []
 
     @property
@@ -31,7 +35,6 @@ class EntryPoint(ABC):
 
     @staticmethod
     def _validate_body(body, prompt=None):
-
         if body:
             return body.strip()
 
@@ -92,6 +95,12 @@ class EntryPoint(ABC):
 
 
 class DynamoDBTable(ABC):
+    """Base class for interfacing with DynamoDB tables
+
+    Attributes:
+        table_name (str): name of DynamoDB table
+        table (aws.dynamodb.Table): Reference to the AWS DynamoDB table
+    """
 
     def __init__(self, *args, **kwargs):
         self.table = aws.dynamodb.Table(self.table_name)
@@ -107,6 +116,9 @@ class DynamoDBTable(ABC):
         return self.table_name in table_names
 
     def create_table(self):
+        """Creates a DynamoDB Table if it doesnt already exist
+        """
+
         aws.dynamodb.create_table(
             TableName=self.table_name,
             AttributeDefinitions=[
