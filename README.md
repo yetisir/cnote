@@ -6,14 +6,6 @@
 
 dNote is a simple Python based CLI utility for managing notes across independent systems in real-time using AWS (free-tier) cloud infrastructure. This project has been inspired by similar CLI note taking utilities ([notes](https://github.com/pimterry/notes) and [notes-cli](https://github.com/rhysd/notes-cli)), but distinguishes itself by using AWS DynamoDB as a storage back-end natively instead of the local file system. This approach has the advantage that notes are inherently backed-up and also become available across devices instantly without relying on third party syncing tools like Dropbox. That being said, avoiding the local file system in favor of the cloud does come with limitation that the notes are only accessible with an internet connection (a local caching solution might be included in a future release though). There are some search implications associated with moving away from a local file system which are detailed in the search section.
 
-## Installation
-
-The latest stable release of dNote can be installed with [pip](https://pip.pypa.io/en/stable/).
-
-```bash
-python -m pip install dnote
-```
-
 ## Documentation
 
 Complete documentation can be found [here](https://dnote.readthedocs.io/en/latest/?badge=latest)
