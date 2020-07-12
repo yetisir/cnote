@@ -4,11 +4,11 @@
 
 [![Build Status](https://travis-ci.com/yetisir/dnote.svg?branch=master)](https://travis-ci.co/yetisir/dnote) [![Coverage Status](https://coveralls.io/repos/github/yetisir/dnote/badge.svg?branch=master)](https://coveralls.io/github/yetisir/dnote?branch=master) [![Maintainability](https://api.codeclimate.com/v1/badges/9188bb54d74247ab039e/maintainability)](https://codeclimate.com/github/yetisir/dnote/maintainability) [![Documentation Status](https://readthedocs.org/projects/dnote/badge/?version=latest)](https://dnote.readthedocs.io/en/latest/?badge=latest)
 
-dNote is a simple Python based CLI utility for managing notes across independent systems in real-time using AWS (free-tier) cloud infrastructure. This project has been inspired by similar CLI note taking utilities ([notes](https://github.com/pimterry/notes) and [notes-cli](https://github.com/rhysd/notes-cli)), but distinguishes itself by using AWS DynamoDB as a storage back-end natively instead of the local file system. This approach has the advantage that notes are inherently backed-up and also become available across devices instantly without relying on third party syncing tools like Dropbox. That being said, avoiding the local file system in favor of the cloud does come with limitation that the notes are only accessible with an internet connection (a local caching solution might be included in a future release though). There are some search implications associated with moving away from a local file system which are detailed in the search section.
+dNote is a simple Python based CLI utility for managing notes across independent systems in real-time using AWS (free-tier) cloud infrastructure. This project has been inspired by similar CLI note taking utilities ([notes](https://github.com/pimterry/notes) and [notes-cli](https://github.com/rhysd/notes-cli)), but distinguishes itself by using AWS DynamoDB as a storage back-end natively instead of the local file system. This approach has the advantage that notes are inherently backed-up and also available across devices instantly without relying on third party syncing tools like Dropbox. That being said, avoiding the local file system in favor of the cloud does mean that notes are only available with an internet connection (though a local caching solution could be implemented in a future release). There also are some search implications associated with moving away from a local file system which are detailed in the [documentation](https://dnote.readthedocs.io/en/latest/?badge=latest).
 
 ## Documentation
 
-Complete documentation can be found [here](https://dnote.readthedocs.io/en/latest/?badge=latest)
+Complete documentation can be found [here](https://dnote.readthedocs.io/en/latest/?badge=latest).
 
 ## Quickstart
 
