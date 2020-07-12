@@ -1,11 +1,18 @@
 import sys
 import functools
-import contextlib
-import os
 import datetime
 
 
 def cli_args(function):
+    """Decorator to allow cli arguments to be parsed by function
+
+    Args:
+        function (func): function to be wrapped
+
+    Returns:
+        func: wrapped function
+    """
+
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
         if 'args' not in kwargs:
@@ -18,15 +25,10 @@ def cli_args(function):
     return wrapper
 
 
-@contextlib.contextmanager
-def suppress_std(std_type):
-    std = f'std{std_type}'
-    save_std = getattr(sys, std)
-    with open(os.devnull, 'w') as devnull:
-        setattr(sys, std, devnull)
-    yield
-    setattr(sys, std, save_std)
-
-
 def now():
+    """Gets current UTC datetime
+
+    Returns:
+        datetime.datetime: Current UTC datetime
+    """
     return datetime.datetime.utcnow()

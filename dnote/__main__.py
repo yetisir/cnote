@@ -5,6 +5,13 @@ from . import utils, entrypoints
 
 @utils.cli_args
 def main(args=None):
+    """[summary]
+
+    Args:
+        args (list of str, optional): CLI args which can be manually
+        overridden. If None, args is grabbed from sys.argv. Defaults to None.
+    """
+
     # create the primary parser
     parser = argparse.ArgumentParser(description='dNote')
     subparsers = parser.add_subparsers(dest='entry_point')
