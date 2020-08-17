@@ -39,7 +39,7 @@ py==1.9.0                 # via pytest
 pycodestyle==2.6.0        # via flake8
 pyflakes==2.2.0           # via flake8
 pyparsing==2.4.7          # via packaging
-pytest-cov==2.10.0         # via dnote
+pytest-cov==2.10.1         # via dnote
 pytest-flake8==1.0.6      # via dnote
 pytest==6.0.1             # via dnote, pytest-cov, pytest-flake8
 python-dateutil==2.8.1    # via botocore, dateparser
