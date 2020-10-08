@@ -6,7 +6,7 @@
 #
 attrs==20.2.0             # via pytest
 botocore==1.17.56          # via boto3, s3transfer
-boto3==1.14.56             # via dnote
+boto3==1.15.14             # via dnote
 certifi==2020.6.20       # via requests
 chardet==3.0.4            # via requests
 click==7.1.2              # via dnote, mkdocs, nltk, pip-tools
