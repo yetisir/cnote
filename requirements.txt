@@ -23,7 +23,7 @@ idna==2.10                 # via requests
 importlib-metadata==2.0.0  # via markdown, pluggy, pytest
 jinja2==2.11.2            # via mkdocs
 jmespath==0.10.0           # via boto3, botocore
-joblib==0.16.0            # via nltk
+joblib==0.17.0            # via nltk
 livereload==2.6.3         # via mkdocs
 lunr[languages]==0.5.8    # via mkdocs
 markdown==3.2.2           # via mkdocs
