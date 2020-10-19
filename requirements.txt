@@ -54,7 +54,7 @@ tqdm==4.50.0              # via nltk
 tzlocal==2.1              # via dateparser
 urllib3==1.25.10           # via botocore, requests
 wcwidth==0.2.5            # via pytest
-zipp==3.3.0               # via importlib-metadata
+zipp==3.3.1               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
