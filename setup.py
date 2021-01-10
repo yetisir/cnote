@@ -14,6 +14,16 @@ setup(
         'configurator[yaml]>=2.0',
         'dateparser>=0.7',
         'nltk>=3.5',
+
+        # Dev Dependencies here for now as well untill pip-compile
+        # supports extras_require
+        'coveralls>=2.0',
+        'mkdocs>=1.1',
+        'pip-tools>=5.1',
+        'pytest>=5.4',
+        'pytest-cov>=2.8',
+        'pytest-flake8>=1.0',
+
     ],
     extras_require={
         'dev': [
