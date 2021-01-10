@@ -3,7 +3,7 @@ from . import common, notes
 
 class NewNoteEntryPoint(common.EntryPoint):
     name = 'new'
-    description = 'Add a note to the dNote database'
+    description = 'Add a note to the cNote database'
 
     def run(self, options):
         body = self._validate_body(options.body)
@@ -20,7 +20,7 @@ class NewNoteEntryPoint(common.EntryPoint):
 
 class FindNotesEntryPoint(common.EntryPoint):
     name = 'find'
-    description = 'Search for notes in the dNote database'
+    description = 'Search for notes in the cNote database'
 
     def run(self, options):
         datetime_range = self._validate_range(options.range)
@@ -48,7 +48,7 @@ class FindNotesEntryPoint(common.EntryPoint):
 
 class RemoveNoteEntryPoint(common.EntryPoint):
     name = 'rm'
-    description = 'Removes notes from the dNote database'
+    description = 'Removes notes from the cNote database'
 
     def run(self, options):
         ids = self._validate_ids(options.ids)
@@ -62,7 +62,7 @@ class RemoveNoteEntryPoint(common.EntryPoint):
 
 class EditNoteEntryPoint(common.EntryPoint):
     name = 'edit'
-    description = 'Updates a note from the dNote database'
+    description = 'Updates a note from the cNote database'
 
     def run(self, options):
         ids = self._validate_ids(options.id)
@@ -89,7 +89,7 @@ class EditNoteEntryPoint(common.EntryPoint):
 
 class ShowNoteEntryPoint(common.EntryPoint):
     name = 'show'
-    description = 'Displays a full note from the dNote database'
+    description = 'Displays a full note from the cNote database'
 
     def run(self, options):
         ids = self._validate_ids(options.ids)
@@ -103,7 +103,7 @@ class ShowNoteEntryPoint(common.EntryPoint):
 
 class UndoEntryPoint(common.EntryPoint):
     name = 'undo'
-    description = 'Undoes the previous dNote edit or new command'
+    description = 'Undoes the previous cNote edit or new command'
 
     def run(self, options):
         raise NotImplementedError
@@ -114,7 +114,7 @@ class UndoEntryPoint(common.EntryPoint):
 
 class ConfigEntryPoint(common.EntryPoint):
     name = 'config'
-    description = 'Config settings for dNote'
+    description = 'Config settings for cNote'
 
     def run(self, options):
         raise NotImplementedError

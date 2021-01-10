@@ -85,7 +85,7 @@ class Note:
             attributes (dict): dictionary containing all the class attributes.
 
         Returns:
-            dnote.notes.Note: New dnote.notes.Note instance based on
+            cnote.notes.Note: New cnote.notes.Note instance based on
                 attributes.
         """
 
@@ -182,7 +182,7 @@ class NoteCollection(common.DynamoDBTable):
     """Class to collect all the notes and interface with DynamoDB note table
 
     Attributes:
-        index (dnote.index.NoteIndex): Index corresponding to this note
+        index (cnote.index.NoteIndex): Index corresponding to this note
             collection
     """
 
@@ -215,7 +215,7 @@ class NoteCollection(common.DynamoDBTable):
         """Updates a note in the database.
 
         Args:
-            note (dnote.notes.Note): Original note.
+            note (cnote.notes.Note): Original note.
             body (str, optional): New note text body. Defaults to None.
             name (str, optional): new note name. Defaults to None.
             tags (list of str, optional): new note tags. Defaults to None.
@@ -247,7 +247,7 @@ class NoteCollection(common.DynamoDBTable):
         as Note objects or as a list of note ids.
 
         Args:
-            notes (list of dnote.notes.Note, optional): List of notes to
+            notes (list of cnote.notes.Note, optional): List of notes to
                 be shown. Defaults to None.
             ids (list of str, optional): List of note ids to be shown.
                 Defaults to None.
@@ -306,7 +306,7 @@ class NoteCollection(common.DynamoDBTable):
                 query. Defaults to (None, None).
 
         Returns:
-            list of dnote.notes.Note: List of dnote.notes.Note objects
+            list of cnote.notes.Note: List of cnote.notes.Note objects
         """
         if ids is None:
             notes = self.table.scan()['Items']
