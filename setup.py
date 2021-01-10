@@ -2,10 +2,10 @@ from setuptools import setup
 
 
 setup(
-    name='dNote',
+    name='cNote',
     version='0.3.7',
     description='Simple CLI utility for managing notes with AWS',
-    url='https://github.com/yetisir/dnote',
+    url='https://github.com/yetisir/cnote',
     author='M. Yetisir',
     author_email='yetisir@gmail.com',
     install_requires=[
@@ -28,7 +28,7 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'dnote = dnote.__main__:main',
+            'cnote = cnote.__main__:main',
         ],
     },
 )

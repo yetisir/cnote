@@ -13,7 +13,7 @@ def main(args=None):
     """
 
     # create the primary parser
-    parser = argparse.ArgumentParser(description='dNote')
+    parser = argparse.ArgumentParser(description='cNote')
     subparsers = parser.add_subparsers(dest='entry_point')
     subparsers.required = True
 

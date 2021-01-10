@@ -1,4 +1,4 @@
-from dnote import notes
+from cnote import notes
 
 import conftest
 
