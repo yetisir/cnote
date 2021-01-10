@@ -5,7 +5,7 @@ import getpass
 import pytest
 from botocore import stub
 
-from dnote import aws, notes, utils
+from cnote import aws, notes, utils
 
 TEST_TIMESTAMP = datetime(2020, 12, 25, 17, 5, 55, tzinfo=timezone.utc)
 TEST_HOST = 'host'
@@ -16,9 +16,9 @@ TEST_USER = 'user'
 def note_collection():
     with stub.Stubber(aws.dynamodb.meta.client) as stubber:
         stubber.add_response(
-            'list_tables', {'TableNames': ['dnote', 'dnote_index']})
+            'list_tables', {'TableNames': ['cnote', 'cnote_index']})
         stubber.add_response(
-            'list_tables', {'TableNames': ['dnote', 'dnote_index']})
+            'list_tables', {'TableNames': ['cnote', 'cnote_index']})
         collection = notes.NoteCollection()
         collection.stubber = stubber
         yield collection

@@ -1,7 +1,7 @@
-site_name: dNote - Cloud Based Note Management
-repo_url: https://github.com/yetisir/dnote
+site_name: cNote - Cloud Based Note Management
+repo_url: https://github.com/yetisir/cnote
 site_author: M. Yetisir
-site_description: dNote Documentation
+site_description: cNote Documentation
 
 nav:
   - Home: index.md
@@ -21,4 +21,4 @@ theme:
 extra:
   social:
     - type: 'github'
-      link: 'https://github.com/yetisir/dnote'  
+      link: 'https://github.com/yetisir/cnote'  
