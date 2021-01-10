@@ -136,7 +136,7 @@ typing-extensions==3.7.4.3
     # via importlib-metadata
 tzlocal==2.1
     # via dateparser
-urllib3==1.25.10
+urllib3==1.26.2
     # via
     #   botocore
     #   requests
