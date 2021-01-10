@@ -103,7 +103,7 @@ python-dateutil==2.8.1
     # via
     #   botocore
     #   dateparser
-pytz==2020.1
+pytz==2020.5
     # via
     #   dateparser
     #   tzlocal
