@@ -34,7 +34,7 @@ coverage==5.3.1
     #   pytest-cov
 coveralls==2.2.0
     # via cNote (setup.py)
-dateparser==0.7.6
+dateparser==1.0.0
     # via cNote (setup.py)
 docopt==0.6.2
     # via coveralls
