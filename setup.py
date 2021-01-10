@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='cNote',
-    version='0.3.7',
+    version='0.4.0',
     description='Simple CLI utility for managing notes with AWS',
     url='https://github.com/yetisir/cnote',
     author='M. Yetisir',
