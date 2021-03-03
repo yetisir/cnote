@@ -117,7 +117,7 @@ regex==2020.10.11
     #   nltk
 requests==2.25.1
     # via coveralls
-s3transfer==0.3.3
+s3transfer==0.3.4
     # via boto3
 six==1.15.0
     # via
