@@ -76,7 +76,7 @@ nltk==3.5
     # via
     #   cNote (setup.py)
     #   lunr
-packaging==20.8
+packaging==20.9
     # via pytest
 pip-tools==5.5.0
     # via cNote (setup.py)
