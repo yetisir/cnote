@@ -10,7 +10,7 @@ attrs==20.3.0
     # via pytest
 boto3==1.16.51
     # via cNote (setup.py)
-botocore==1.19.51
+botocore==1.20.20
     # via
     #   boto3
     #   s3transfer
@@ -130,7 +130,7 @@ tornado==6.1
     # via
     #   livereload
     #   mkdocs
-tqdm==4.55.1
+tqdm==4.58.0
     # via nltk
 typing-extensions==3.7.4.3
     # via importlib-metadata
