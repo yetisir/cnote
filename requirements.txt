@@ -62,7 +62,7 @@ joblib==1.0.0
     # via nltk
 livereload==2.6.3
     # via mkdocs
-lunr[languages]==0.5.8
+lunr[languages]==0.5.9
     # via mkdocs
 markdown==3.3.3
     # via mkdocs
