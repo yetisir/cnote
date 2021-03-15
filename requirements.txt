@@ -44,7 +44,7 @@ future==0.18.2
     # via lunr
 idna==2.10
     # via requests
-importlib-metadata==3.7.0
+importlib-metadata==3.7.3
     # via
     #   flake8
     #   markdown
