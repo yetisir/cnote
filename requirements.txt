@@ -10,7 +10,7 @@ attrs==20.3.0
     # via pytest
 boto3==1.17.53
     # via cNote (setup.py)
-botocore==1.20.53
+botocore==1.20.54
     # via
     #   boto3
     #   s3transfer
@@ -38,7 +38,7 @@ dateparser==0.7.6
     # via cNote (setup.py)
 docopt==0.6.2
     # via coveralls
-flake8==3.8.4
+flake8==3.9.1
     # via pytest-flake8
 future==0.18.2
     # via lunr
@@ -72,7 +72,7 @@ mccabe==0.6.1
     # via flake8
 mkdocs==1.1.2
     # via cNote (setup.py)
-nltk==3.5
+nltk==3.6.2
     # via
     #   cNote (setup.py)
     #   lunr
@@ -103,7 +103,7 @@ python-dateutil==2.8.1
     # via
     #   botocore
     #   dateparser
-pytz==2020.1
+pytz==2021.1
     # via
     #   dateparser
     #   tzlocal
@@ -136,7 +136,7 @@ typing-extensions==3.7.4.3
     # via importlib-metadata
 tzlocal==2.1
     # via dateparser
-urllib3==1.25.10
+urllib3==1.26.4
     # via
     #   botocore
     #   requests
