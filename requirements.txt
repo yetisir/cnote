@@ -32,7 +32,7 @@ coverage==5.5
     # via
     #   coveralls
     #   pytest-cov
-coveralls==3.0.1
+coveralls==2.2.0
     # via cNote (setup.py)
 dateparser==0.7.6
     # via cNote (setup.py)
@@ -72,7 +72,7 @@ mccabe==0.6.1
     # via flake8
 mkdocs==1.1.2
     # via cNote (setup.py)
-nltk==3.5
+nltk==3.6.2
     # via
     #   cNote (setup.py)
     #   lunr
@@ -90,11 +90,11 @@ pyflakes==2.2.0
     # via flake8
 pyparsing==2.4.7
     # via packaging
-pytest-cov==2.10.1
+pytest-cov==2.11.1
     # via cNote (setup.py)
 pytest-flake8==1.0.7
     # via cNote (setup.py)
-pytest==6.2.1
+pytest==6.2.3
     # via
     #   cNote (setup.py)
     #   pytest-cov
@@ -107,7 +107,7 @@ pytz==2020.1
     # via
     #   dateparser
     #   tzlocal
-pyyaml==5.4.1
+pyyaml==5.3.1
     # via
     #   configurator
     #   mkdocs
@@ -117,7 +117,7 @@ regex==2020.10.11
     #   nltk
 requests==2.25.1
     # via coveralls
-s3transfer==0.3.4
+s3transfer==0.4.0
     # via boto3
 six==1.15.0
     # via
@@ -140,7 +140,7 @@ urllib3==1.25.10
     # via
     #   botocore
     #   requests
-zipp==3.4.0
+zipp==3.4.1
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
