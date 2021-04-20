@@ -64,7 +64,7 @@ livereload==2.6.3
     # via mkdocs
 lunr[languages]==0.5.9
     # via mkdocs
-markdown==3.3.3
+markdown==3.3.4
     # via mkdocs
 markupsafe==1.1.1
     # via jinja2
