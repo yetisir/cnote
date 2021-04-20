@@ -72,7 +72,7 @@ mccabe==0.6.1
     # via flake8
 mkdocs==1.1.2
     # via cNote (setup.py)
-nltk==3.5
+nltk==3.6.2
     # via
     #   cNote (setup.py)
     #   lunr
