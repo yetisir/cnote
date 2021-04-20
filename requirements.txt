@@ -78,7 +78,7 @@ nltk==3.6.2
     #   lunr
 packaging==20.9
     # via pytest
-pip-tools==5.5.0
+pip-tools==6.1.0
     # via cNote (setup.py)
 pluggy==0.13.1
     # via pytest
