@@ -117,7 +117,7 @@ regex==2021.4.4
     #   nltk
 requests==2.25.1
     # via coveralls
-s3transfer==0.4.0
+s3transfer==0.4.2
     # via boto3
 six==1.15.0
     # via
@@ -130,7 +130,7 @@ tornado==6.1
     # via
     #   livereload
     #   mkdocs
-tqdm==4.60.0
+tqdm==4.61.1
     # via nltk
 typing-extensions==3.7.4.3
     # via importlib-metadata
