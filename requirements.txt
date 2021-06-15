@@ -94,7 +94,7 @@ pytest-cov==2.11.1
     # via cNote (setup.py)
 pytest-flake8==1.0.7
     # via cNote (setup.py)
-pytest==6.2.3
+pytest==6.2.4
     # via
     #   cNote (setup.py)
     #   pytest-cov
@@ -117,7 +117,7 @@ regex==2021.4.4
     #   nltk
 requests==2.25.1
     # via coveralls
-s3transfer==0.4.0
+s3transfer==0.4.2
     # via boto3
 six==1.15.0
     # via
