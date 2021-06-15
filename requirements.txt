@@ -32,7 +32,7 @@ coverage==5.5
     # via
     #   coveralls
     #   pytest-cov
-coveralls==2.2.0
+coveralls==3.1.0
     # via cNote (setup.py)
 dateparser==0.7.6
     # via cNote (setup.py)
@@ -117,7 +117,7 @@ regex==2021.4.4
     #   nltk
 requests==2.25.1
     # via coveralls
-s3transfer==0.4.0
+s3transfer==0.4.2
     # via boto3
 six==1.15.0
     # via
