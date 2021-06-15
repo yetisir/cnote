@@ -94,7 +94,7 @@ pytest-cov==2.11.1
     # via cNote (setup.py)
 pytest-flake8==1.0.7
     # via cNote (setup.py)
-pytest==6.2.3
+pytest==6.2.4
     # via
     #   cNote (setup.py)
     #   pytest-cov
