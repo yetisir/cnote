@@ -10,7 +10,7 @@ attrs==20.3.0
     # via pytest
 boto3==1.17.95
     # via cNote (setup.py)
-botocore==1.20.95
+botocore==1.20.93
     # via
     #   boto3
     #   s3transfer
@@ -66,7 +66,7 @@ lunr[languages]==0.6.0
     # via mkdocs
 markdown==3.3.4
     # via mkdocs
-markupsafe==2.0.1
+markupsafe==1.1.1
     # via jinja2
 mccabe==0.6.1
     # via flake8
@@ -119,7 +119,7 @@ requests==2.25.1
     # via coveralls
 s3transfer==0.4.2
     # via boto3
-six==1.15.0
+six==1.16.0
     # via
     #   livereload
     #   lunr
@@ -132,7 +132,7 @@ tornado==6.1
     #   mkdocs
 tqdm==4.61.1
     # via nltk
-typing-extensions==3.10.0.0
+typing-extensions==3.7.4.3
     # via importlib-metadata
 tzlocal==2.1
     # via dateparser
