@@ -42,7 +42,7 @@ flake8==3.9.1
     # via pytest-flake8
 future==0.18.2
     # via lunr
-idna==2.10
+idna==3.2
     # via requests
 importlib-metadata==4.5.0
     # via
