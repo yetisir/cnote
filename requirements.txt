@@ -6,7 +6,7 @@
 #
 atomicwrites==1.4.0
     # via pytest
-attrs==20.3.0
+attrs==21.2.0
     # via pytest
 boto3==1.17.95
     # via cNote (setup.py)
