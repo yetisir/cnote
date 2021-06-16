@@ -8,7 +8,7 @@ atomicwrites==1.4.0
     # via pytest
 attrs==20.3.0
     # via pytest
-boto3==1.17.93
+boto3==1.17.95
     # via cNote (setup.py)
 botocore==1.20.93
     # via
@@ -90,7 +90,7 @@ pyflakes==2.3.1
     # via flake8
 pyparsing==2.4.7
     # via packaging
-pytest-cov==2.11.1
+pytest-cov==2.12.1
     # via cNote (setup.py)
 pytest-flake8==1.0.7
     # via cNote (setup.py)
@@ -130,13 +130,13 @@ tornado==6.1
     # via
     #   livereload
     #   mkdocs
-tqdm==4.60.0
+tqdm==4.61.1
     # via nltk
 typing-extensions==3.7.4.3
     # via importlib-metadata
 tzlocal==2.1
     # via dateparser
-urllib3==1.26.4
+urllib3==1.26.5
     # via
     #   botocore
     #   requests
