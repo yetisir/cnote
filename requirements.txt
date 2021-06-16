@@ -38,7 +38,7 @@ dateparser==0.7.6
     # via cNote (setup.py)
 docopt==0.6.2
     # via coveralls
-flake8==3.9.1
+flake8==3.9.2
     # via pytest-flake8
 future==0.18.2
     # via lunr
